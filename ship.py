@@ -10,6 +10,12 @@ import argparse
 import mimetypes
 # Basic http server
 from http.server import BaseHTTPRequestHandler, HTTPServer
+# html templates
+from templates import BASE_TEMPLATE, TEMPLATE_ERROR
+from templates import TEMPLATE_APPLICATION, TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
+from templates import TEMPLATE_PDF
+
+# source env/bin/activate
 
 # cli stuff
 parser = argparse.ArgumentParser(description="""Send file to phone or other computers. Make sure to kill this process after completetion""")
@@ -22,14 +28,26 @@ HOST = socket.gethostbyname(socket.gethostname())
 PORT = 9999
 # share file config
 FILENAME = args.file
-with open(FILENAME, "rb") as f:
-    FILE = f.read()
+if FILENAME == None:
+    print("""file param cannot be "None" be sure to include a file""")
+    sys.exit()
+try:
+    with open(FILENAME, "rb") as f:
+        FILE = f.read()
+except BaseException as e:
+    print(f"File error: {e}")
+    sys.exit()  
 MIMETYPE = mimetypes.guess_type(FILENAME)
 TYPE = MIMETYPE[0].split("/")[0]
 # favicon config
 ICO_FILENAME = "favicon.ico"
-with open(ICO_FILENAME, "rb") as f:
-    ICO = f.read()
+try:
+    with open(ICO_FILENAME, "rb") as f:
+        ICO = f.read()
+except BaseException as e:
+    print(f"file reading error: {e}")
+    sys.exit()  
+print(MIMETYPE)
 
 # transfer files
 # audio
@@ -42,62 +60,6 @@ with open(ICO_FILENAME, "rb") as f:
 # -MOV (Working)
 
 # HTML templates
-BASE_TEMPLATE = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Page Title</title>
-        <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
-    </head>
-    <body>
-        <p style="">Testing: Basically giphy on crack but only served localy</p>
-        {TEMPLATE}
-    </body>
-</html>
-"""
-TEMPLATE_AUDIO = """
-<div style="display:flex; justify-content:center;">
-    <a href="{FILENAME}" download>
-        <audio controls>
-            <source src="{FILENAME}" type="{MIMETYPE}">
-            Your browser does not support the audio element.
-        </audio>
-        <p style="margin-top: 3;">Click this to download and wait two seconds</p>
-    </a>
-</div>
-"""
-TEMPLATE_IMAGE = """
-<p>Filename: {FILENAME}</p>
-<div style="display:flex; justify-content:center;">
-    <a href="{FILENAME}" download>
-        <img src="{FILENAME}" alt="document" style="height:500px; width:auto;">
-        <p style="margin-top: 3;">Click this to download and wait two seconds</p>
-    </a>
-</div>
-"""
-TEMPLATE_TEXT = """
-<p>Filename: {FILENAME}</p>
-<div style="display:flex; justify-content:center;">
-    <a href="{FILENAME}" download>
-        <embed src="{FILENAME}">
-        <p style="margin-top: 3;">Click this to download and wait two seconds</p>
-    </a>
-</div
-"""
-TEMPLATE_VIDEO = """
-<p>Filename: {FILENAME}</p>
-<div style="display:flex; justify-content:center;">
-    <video width="320" height="500" src="{FILENAME}" preload controls></video>
-    <a href="{FILENAME}" download>
-        <p style="margin-top: 3;">Click this to download and wait two seconds</p>
-    </a>
-</div
-"""
-TEMPLATE_ERROR = """
-<div style="display:flex; justify-content:center;">
-    <a href="http://{HOST}:{PORT}">Return to home</a>
-</div
-"""
 
 TYPES = {
     "audio":TEMPLATE_AUDIO ,
@@ -107,8 +69,18 @@ TYPES = {
     "error":TEMPLATE_ERROR,
 }
 
-def get_response(name, settings):
-    return BASE_TEMPLATE.format(**{"TEMPLATE":TYPES.get(name).format(**settings),"HOST": HOST,"PORT":PORT})
+TYPES_SPECIAL = {
+    "application/pdf": TEMPLATE_PDF,
+}
+
+def get_response(name, settings, mime):
+    print(name, settings, mime)
+    try:
+        r = BASE_TEMPLATE.format(**{"TEMPLATE":TYPES.get(name).format(**settings),"HOST": HOST,"PORT":PORT})
+    except:
+        # pdf
+        r = TYPES_SPECIAL.get(mime[0]).format({**settings,"HOST": HOST,"PORT":PORT})
+    return r
 
 def main():
     class MyServer(BaseHTTPRequestHandler):
@@ -120,6 +92,7 @@ def main():
                 self.send_header('Content-Length', len(FILE))
                 self.end_headers()
                 self.wfile.write(FILE)
+
             elif self.path == f"/files/favicon.ico":
                 self.log_message(f"Loading favicon")
                 self.send_response(200, "OK")
@@ -127,17 +100,34 @@ def main():
                 self.send_header('Content-Length', len(ICO))
                 self.end_headers()
                 self.wfile.write(ICO)
+
+            elif self.path == f"/demo_defer.js":
+                JS_FILENAME = "custompdf.js"
+                try:
+                    with open(JS_FILENAME, "rb") as f:
+                        JS = f.read()
+                except BaseException as e:
+                    print(f"file reading error: {e}")
+                    sys.exit() 
+                self.log_message(f"Loading pdfjs {type(JS)}")
+                self.send_response(200, "OK")
+                self.send_header("Content-Type", "text/javascript")
+                self.send_header('Content-Length', len(JS))
+                self.end_headers()
+                self.wfile.write(JS)
+
             elif self.path == "/":
                 self.log_message(f"Loading in main")
-                res = get_response(TYPE, {"FILENAME":FILENAME,"MIMETYPE":MIMETYPE[0]})
+                res = get_response(TYPE, {"FILENAME":FILENAME,"MIMETYPE":MIMETYPE[0], "HOST":HOST, "PORT":PORT}, MIMETYPE)
                 self.send_response(200, "OK")
                 self.send_header("Content-type", "text/html")
                 self.send_header('Content-Length', len(res.encode('utf-8')))
                 self.end_headers()
                 self.wfile.write(res.encode())
+
             else:
                 self.log_message(f"Loading in error")
-                res = get_response("error", {"HOST":HOST,"PORT":PORT})
+                res = get_response("error", {"HOST":HOST,"PORT":PORT}, "")
                 self.send_response(404, "Not Found")
                 self.send_header("Content-type", "text/html")
                 self.send_header('Content-Length', len(res.encode('utf-8')))
