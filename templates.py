@@ -2,7 +2,7 @@ BASE_TEMPLATE = """
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Page Title</title>
+        <title>Ship</title>
         <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
     </head>
     <body>
@@ -65,23 +65,36 @@ TEMPLATE_VIDEO = """
 TEMPLATE_ERROR = """
 <div style="display:flex; justify-content:center;">
     <a href="http://{HOST}:{PORT}">Return to home</a>
+    {MESSAGE}
 </div
 """
 TEMPLATE_PDF = """
-<script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ship</title>
+        <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
+        <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>        
+    </head>
+    <body>
+        <p style="">Testing: Basically giphy on crack but only served localy</p>
+        <div>
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+            &nbsp; &nbsp;
+            <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+            <a href="{FILENAME}" download>
+                <p>Click this to download and wait two seconds</p>
+            </a>
+        </div>
 
-<h1>PDF.js Previous/Next example</h1>
+        <canvas id="the-canvas" style="border: 1px solid black; direction: ltr;"></canvas>
+        <script>
+            var url = 'http://{HOST}:{PORT}/{FILENAME}';
+        </script>
+        <script src="demo_defer.js" defer></script>
+    </body>
+</html>
 
-<div>
-    <button id="prev">Previous</button>
-    <button id="next">Next</button>
-    &nbsp; &nbsp;
-    <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-</div>
 
-<canvas id="the-canvas"></canvas>
-<script>
-    var url = 'https://{HOST}:{PORT}/{FILENAME}';
-</script>
-<script src="demo_defer.js" defer></script>
 """

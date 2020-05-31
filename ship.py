@@ -10,7 +10,7 @@ import argparse
 import mimetypes
 # Basic http server
 from http.server import BaseHTTPRequestHandler, HTTPServer
-# html templates
+# HTML templates
 from templates import BASE_TEMPLATE, TEMPLATE_ERROR
 from templates import TEMPLATE_APPLICATION, TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
 from templates import TEMPLATE_PDF
@@ -55,11 +55,9 @@ print(MIMETYPE)
 # image
 # -jpg, png, gif (Working)
 # text
-# -TXT (Working)
+# -txt, pdf (Working)
 # video
-# -MOV (Working)
-
-# HTML templates
+# -mov (Working)
 
 TYPES = {
     "audio":TEMPLATE_AUDIO ,
@@ -73,13 +71,19 @@ TYPES_SPECIAL = {
     "application/pdf": TEMPLATE_PDF,
 }
 
-def get_response(name, settings, mime):
-    print(name, settings, mime)
+def get_response(name, settings):
+    # application {'FILENAME': 'files/a.pdf', 'MIMETYPE': 'application/pdf', 'HOST': '192.168.44.241', 'PORT': 9999
     try:
-        r = BASE_TEMPLATE.format(**{"TEMPLATE":TYPES.get(name).format(**settings),"HOST": HOST,"PORT":PORT})
+        r = BASE_TEMPLATE.format(**{
+            "TEMPLATE":TYPES.get(name).format(**settings),
+            "HOST": HOST,
+            "PORT":PORT})
     except:
         # pdf
-        r = TYPES_SPECIAL.get(mime[0]).format({**settings,"HOST": HOST,"PORT":PORT})
+        r = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**{
+            **settings,
+            "HOST": HOST,
+            "PORT":PORT})
     return r
 
 def main():
@@ -102,23 +106,35 @@ def main():
                 self.wfile.write(ICO)
 
             elif self.path == f"/demo_defer.js":
-                JS_FILENAME = "custompdf.js"
+                JS_FILENAME = "demo_defer.js"
                 try:
                     with open(JS_FILENAME, "rb") as f:
                         JS = f.read()
+                    self.log_message(f"Loading pdfjs")
+                    self.send_response(200, "OK")
+                    self.send_header("Content-Type", "text/javascript")
+                    self.send_header('Content-Length', len(JS))
+                    self.end_headers()
+                    self.wfile.write(JS)
                 except BaseException as e:
                     print(f"file reading error: {e}")
+                    self.log_message(f"Loading demo")
+                    res = get_response("error", {"HOST":HOST,"PORT":PORT,"MESSAGE":"This is an illegal route"})
+                    self.send_response(404, "Not Found")
+                    self.send_header("Content-type", "text/html")
+                    self.send_header('Content-Length', len(res.encode('utf-8')))
+                    self.end_headers()
+                    self.wfile.write(res.encode())
                     sys.exit() 
-                self.log_message(f"Loading pdfjs {type(JS)}")
-                self.send_response(200, "OK")
-                self.send_header("Content-Type", "text/javascript")
-                self.send_header('Content-Length', len(JS))
-                self.end_headers()
-                self.wfile.write(JS)
+
 
             elif self.path == "/":
                 self.log_message(f"Loading in main")
-                res = get_response(TYPE, {"FILENAME":FILENAME,"MIMETYPE":MIMETYPE[0], "HOST":HOST, "PORT":PORT}, MIMETYPE)
+                res = get_response(TYPE, {
+                    "FILENAME":FILENAME,
+                    "MIMETYPE":MIMETYPE[0],
+                    "HOST":HOST,
+                    "PORT":PORT})
                 self.send_response(200, "OK")
                 self.send_header("Content-type", "text/html")
                 self.send_header('Content-Length', len(res.encode('utf-8')))
@@ -127,7 +143,11 @@ def main():
 
             else:
                 self.log_message(f"Loading in error")
-                res = get_response("error", {"HOST":HOST,"PORT":PORT}, "")
+                res = get_response("error", {
+                    "HOST":HOST,
+                    "PORT":PORT,
+                    "MESSAGE":"This is an illegal route"
+                    })
                 self.send_response(404, "Not Found")
                 self.send_header("Content-type", "text/html")
                 self.send_header('Content-Length', len(res.encode('utf-8')))
