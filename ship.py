@@ -11,7 +11,7 @@ import mimetypes
 # Basic http server
 from http.server import BaseHTTPRequestHandler, HTTPServer
 # HTML templates
-from templates import BASE_TEMPLATE, TEMPLATE_ERROR
+from templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
 from templates import TEMPLATE_APPLICATION, TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
 from templates import TEMPLATE_PDF
 
@@ -72,18 +72,22 @@ TYPES_SPECIAL = {
 }
 
 def get_response(name, settings):
-    # application {'FILENAME': 'files/a.pdf', 'MIMETYPE': 'application/pdf', 'HOST': '192.168.44.241', 'PORT': 9999
+    # application 
+    # {'FILENAME': 'files/a.pdf', 'MIMETYPE': 'application/pdf', 'HOST': '192.168.44.241', 'PORT': 9999 }
     try:
         r = BASE_TEMPLATE.format(**{
             "TEMPLATE":TYPES.get(name).format(**settings),
             "HOST": HOST,
             "PORT":PORT})
     except:
-        # pdf
-        r = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**{
-            **settings,
-            "HOST": HOST,
-            "PORT":PORT})
+        try:
+            r = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**{
+                **settings,
+                "HOST": HOST,
+                "PORT":PORT})
+        except:
+            # https://stackoverflow.com/a/46315848
+            r = FULL_TEMPLATE.format(**settings)
     return r
 
 def main():
