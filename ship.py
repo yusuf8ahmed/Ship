@@ -1,3 +1,4 @@
+import os
 # Logging
 import time
 # for exiting
@@ -12,8 +13,10 @@ import mimetypes
 from http.server import BaseHTTPRequestHandler, HTTPServer
 # HTML templates
 from templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
-from templates import TEMPLATE_APPLICATION, TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
+from templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
 from templates import TEMPLATE_PDF
+
+print(os.getcwd())
 
 # source env/bin/activate
 
@@ -74,20 +77,27 @@ TYPES_SPECIAL = {
 def get_response(name, settings):
     # application 
     # {'FILENAME': 'files/a.pdf', 'MIMETYPE': 'application/pdf', 'HOST': '192.168.44.241', 'PORT': 9999 }
+    print(name,settings)
     try:
-        r = BASE_TEMPLATE.format(**{
-            "TEMPLATE":TYPES.get(name).format(**settings),
-            "HOST": HOST,
-            "PORT":PORT})
-    except:
         try:
-            r = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**{
-                **settings,
+            print("HELlo1")
+            r = BASE_TEMPLATE.format(**{
+                "TEMPLATE":TYPES.get(name).format(**settings),
                 "HOST": HOST,
                 "PORT":PORT})
-        except:
-            # https://stackoverflow.com/a/46315848
-            r = FULL_TEMPLATE.format(**settings)
+            print(f"1{r}")
+        except BaseException as e:
+                print("HELlo2", "ERRor" + str(e))
+                r = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**{
+                    **settings,
+                    "HOST": HOST,
+                    "PORT":PORT})
+                print(f"2{r}")
+    except BaseException as e:
+        print("HELlo3", "ERRor" + str(e))
+        # https://stackoverflow.com/a/46315848
+        r = FULL_TEMPLATE.format(**settings)
+        print(f"3{r}")
     return r
 
 def main():
@@ -130,7 +140,6 @@ def main():
                     self.end_headers()
                     self.wfile.write(res.encode())
                     sys.exit() 
-
 
             elif self.path == "/":
                 self.log_message(f"Loading in main")

@@ -149,6 +149,7 @@ dmypy.json
 
 env/*
 .vscode/*
+.setup.py
 
 # End of https://www.gitignore.io/api/visualstudiocode,macos,python
 
