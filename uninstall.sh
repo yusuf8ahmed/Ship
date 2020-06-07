@@ -1,21 +1,13 @@
+echo "Uninstall Ship:
+If you having problems or error please tell me
+on the github issues page:
+https://github.com/yusuf8ahmed/Ship/issues 
+"
 
-read -r -p "Unistalling ship Proceed? [y/n]:  " response
+read -r -p "Proceed with uninstallation? [y/n]:  " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
-    rm -R /usr/local/bin/files
-    rm /usr/local/bin/Python
-    rm /usr/local/bin/ship
-    rm /usr/local/bin/base_library.zip
-    rm /usr/local/bin/libcrypto.1.1.dylib /usr/local/bin/libncursesw.5.dylib /usr/local/bin/libssl.1.1.dylib
-
-    read -r -p "Ship will delete all .so files within usr/local/bin Proceed? [y/n]:  " response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
-    then
-        #shared objects
-        rm /usr/local/bin/*.so
-    else
-        exit 0   
-    fi
+    unlink /usr/local/bin/ship
 else
     exit 0
 fi
