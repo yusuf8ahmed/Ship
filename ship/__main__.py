@@ -47,6 +47,7 @@ else:
 # -mov (Working)
 
 # rm -rf build dist
+# pyinstaller cli.spec
 
 
 # cli stuff
@@ -55,12 +56,6 @@ parser.add_argument('file', type=str, nargs='?', help='file to be shared')
 parser.add_argument('-p','--port', type=int ,default=9999, metavar='file', nargs='?', help='port to be shared one')
 args = parser.parse_args()
 
-class ArgumentError(Exception):
-    """ raised when an incorrect argument is given """
-    def __init__(self, *args):
-        self.message = args[0]
-    def __str__(self):
-        return 'ArgumentError, {}'.format(self.message)
 def local_address():
     """Return the/a network-facing IP number for this system."""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
@@ -77,7 +72,7 @@ PORT = args.port
 # sharing file config
 FILENAME = args.file
 if type(FILENAME) != str:
-    raise ArgumentError("Ship: filename argument can only be of type string not {}".format(type(FILENAME)))
+    raise SystemExit("Ship: filename argument can only be of type string not {}".format(type(FILENAME)))
     sys.exit()
 MIMETYPE = mimetypes.guess_type(FILENAME)
 TYPE = MIMETYPE[0].split("/")[0]    
@@ -109,8 +104,6 @@ TYPES_SPECIAL = {
 }
 
 def get_response(name, settings):
-    # application 
-    # {'FILENAME': 'files/a.pdf', 'MIMETYPE': 'application/pdf', 'HOST': '192.168.44.241', 'PORT': 9999 }
     try:
         try:
             r = BASE_TEMPLATE.format(**{
