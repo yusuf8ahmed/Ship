@@ -10,7 +10,7 @@ with open(os.path.join(HERE, "README.md")) as fid:
 
 setup(
     name="ship",
-    version="1.0.0",
+    version="0.0.1",
     description="Ship it",
     long_description=README,
     long_description_content_type="text/markdown",
