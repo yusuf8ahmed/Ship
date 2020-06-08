@@ -5,7 +5,7 @@ Ship is a command line application that makes transferring files from a computer
 
 ## Installation
 1. clone this repo with the lastest tag <br>
-`git clone https://github.com/yusuf8ahmed/Ship.git --branch v0.0.3 --single-branch`
+`git clone https://github.com/yusuf8ahmed/Ship.git --branch v0.0.1 --single-branch`
 2. go into the Ship folder<br>
 `cd Ship`
 3. and open the terminal and run <br>
