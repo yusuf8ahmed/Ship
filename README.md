@@ -12,6 +12,14 @@ Ship is a command line application that makes transferring files from a computer
 3. and open the terminal and run <br>
 `bash install.sh`
 
+<<<<<<< HEAD
 # Uninstallation
 1. Go into the Ship folder and open the terminal and run 
 `bash unistall.sh`
+=======
+## Uninstallation
+1. Go into the Ship folder and open the terminal then run <br>
+`bash uninstall.sh` <br>
+**This will not delete the Ship folder to do that you must type in the terminal** <br>
+ `rm -R Ship`
+>>>>>>> ba8ffdc1d42c8f37764dab5a13cf67c432f1dc21
