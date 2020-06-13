@@ -39,6 +39,15 @@ else:
 # python3.7 -m PyInstaller cli.spec
 # [("ship/favicon.ico", "files"), ("ship/demo_defer.js", "files")]
 
+# git init
+# git status
+# git add .
+# git commit -m "alpha release v0.0.1.x"
+# git push origin master
+
+# git tag -a v0.0.1.x -m "alpha release v0.0.1.x"
+# git push origin v0.0.1.x
+
 # cli stuff
 parser = argparse.ArgumentParser(description="""Send file to phone or other computers. Make sure to kill this process after completetion""")
 parser.add_argument('file', type=str, nargs='?', help='file to be shared')
