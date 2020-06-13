@@ -32,7 +32,7 @@ TEMPLATE_IMAGE = """
     <img src="{FILENAME}" alt="document" style="">
     <div style="">
         <p>Filename: {FILENAME}</p>
-        <a href="{FILENAME}" style="text-decoration: none; color: black; float: right;" download>
+        <a href="{FILENAME}" style="text-decoration: none; color: black;" download>
             <p style="text-decoration: none;">download</p>
         </a>    
     </div>
@@ -73,7 +73,7 @@ TEMPLATE_VIDEO = """
         <div style="display: inline-block">
             <p>Filename: {FILENAME}</p>
         </div>
-        <div style="display: inline-block; float: right;">
+        <div style="display: inline-block;">
             <a href="{FILENAME}" style="text-decoration: none; float: right;" download>
                 <p>download</p>
             </a> 
