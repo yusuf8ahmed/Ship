@@ -1,3 +1,4 @@
+# -*- Mode: Python; tab-width: 4 -*-
 import os
 # Logging
 import time
@@ -12,43 +13,31 @@ import mimetypes
 # Basic http server
 from http.server import BaseHTTPRequestHandler, HTTPServer
 # HTML templates
+from inspect import currentframe, getframeinfo
+# Get line 
+
 if hasattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):
     #running in a PyInstaller bundle
     from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
     from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
     from .templates import TEMPLATE_PDF
+    #files
+    bdir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+    ICO_FILENAME = os.path.join(bdir, "files/favicon.ico")
+    JS_FILENAME = os.path.join(bdir, "files/demo_defer.js")
 else:
     #running in a normal Python process
     from templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
     from templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
     from templates import TEMPLATE_PDF
-    
-# files    
-if hasattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):
-    #running in a PyInstaller bundle
-    bdir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-    ICO_FILENAME = os.path.join(bdir, "files/favicon.ico")
-    JS_FILENAME = os.path.join(bdir, "files/demo_defer.js")
-else:
-    #running in a normal Python process 
+    # files
     ICO_FILENAME = os.path.join(os.path.dirname(__file__), "favicon.ico") 
-    JS_FILENAME = os.path.join(os.path.dirname(__file__), "demo_defer.js")  
+    JS_FILENAME = os.path.join(os.path.dirname(__file__), "demo_defer.js")
     
 # source env/bin/activate
 
-# transfer files
-# audio
-# -
-# image
-# -jpg, png, gif (Working)
-# text
-# -txt, pdf (Working)
-# video
-# -mov (Working)
-
 # rm -rf build dist
 # pyinstaller cli.spec
-
 
 # cli stuff
 parser = argparse.ArgumentParser(description="""Send file to phone or other computers. Make sure to kill this process after completetion""")
@@ -70,26 +59,27 @@ HOST = local_address()
 PORT = args.port
 
 # sharing file config
-FILENAME = args.file
+FILENAME, frameinfo = args.file, getframeinfo(currentframe())
 if type(FILENAME) != str:
-    raise SystemExit("Ship: filename argument can only be of type string not {}".format(type(FILENAME)))
-    sys.exit()
-MIMETYPE = mimetypes.guess_type(FILENAME)
-TYPE = MIMETYPE[0].split("/")[0]    
+    raise SystemExit("Ship: line {}: filename argument can only be of type string not {}".format(frameinfo.lineno, type(FILENAME)))
+try:
+    MIMETYPE, frameinfo = mimetypes.guess_type(FILENAME), getframeinfo(currentframe())
+    TYPE = MIMETYPE[0].split("/")[0]
+except:
+    rep = """please report file type on the github issues page:\nhttps://github.com/yusuf8ahmed/Ship/issues """
+    raise SystemExit("""Ship: line {}: file type is not supported {}, {}\n{}""".format(frameinfo.lineno, FILENAME, MIMETYPE,rep))
 try:
     with open(FILENAME, "rb") as f:
         FILE = f.read()
 except BaseException as e:
-    print("file reading error: {}".format(e))
-    sys.exit()  
+    raise SystemExit("Ship: file reading error ({}) : {}".format(FILENAME,e)) 
 
 # favicon config
 try:
     with open(ICO_FILENAME, "rb") as f:
         ICO = f.read()
 except BaseException as e:
-    print("file reading error: {}".format(e))
-    sys.exit()  
+    raise SystemExit("Ship: favicon reading error ({}) : {}".format(FILENAME,e))  
 
 TYPES = {
     "audio":TEMPLATE_AUDIO ,
@@ -105,16 +95,17 @@ TYPES_SPECIAL = {
 
 def get_response(name, settings):
     try:
+        r = BASE_TEMPLATE.format(**{
+            "TEMPLATE":TYPES.get(name).format(**settings),
+            "HOST": HOST,
+            "PORT":PORT})
+    except BaseException as e:
+        print(e)
         try:
-            r = BASE_TEMPLATE.format(**{
-                "TEMPLATE":TYPES.get(name).format(**settings),
-                "HOST": HOST,
-                "PORT":PORT})
-        except BaseException as e:
             settings.update({"HOST": HOST, "PORT":PORT})
             r = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**settings)
-    except BaseException as e:
-        r = FULL_TEMPLATE.format(**settings)
+        except BaseException as e:
+            r = FULL_TEMPLATE.format(**settings)
     return r
 
 def main():
@@ -174,7 +165,7 @@ def main():
 
     myServer = HTTPServer((HOST, PORT), MyServer)
     print("Make sure to click 'ctrl-c' to kill after usage")
-    print("{} Sharing Server Starts - http://{}:{}".format(time.asctime(),HOST,PORT))
+    print("{} Sharing Server Starts {} - http://{}:{}".format(time.asctime(),TYPE,HOST,PORT))
     try:
         myServer.serve_forever()
     except KeyboardInterrupt:

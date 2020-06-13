@@ -4,8 +4,7 @@ BASE_TEMPLATE = """
     <head>
         <title>Ship</title>
         <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
-        <style>
-        </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <div style="top: 0;bottom: 0;left: 0;right: 0;">
@@ -27,10 +26,11 @@ TEMPLATE_AUDIO = """
     </a>
 </div>
 """
+
 TEMPLATE_IMAGE = """
 <div >
-    <img src="{FILENAME}" alt="document" style="height:500px; width:auto;">
-    <div style="height:500px; width:auto;">
+    <img src="{FILENAME}" alt="document" style="">
+    <div style="">
         <p>Filename: {FILENAME}</p>
         <a href="{FILENAME}" style="text-decoration: none; color: black; float: right;" download>
             <p style="text-decoration: none;">download</p>
@@ -38,32 +38,57 @@ TEMPLATE_IMAGE = """
     </div>
 </div>
 """
-TEMPLATE_TEXT = """
+
+TEMPLATE_TEXT_ = """
 <div>
-    <embed src="{FILENAME}">
+    <embed src="{FILENAME}" style="border:0 border-left: 6px solid #ccc; border-color: #D3D3D3!important;">
     <p>Filename: {FILENAME}</p>
     <a href="{FILENAME}" style="text-decoration: none;" download>
         <p style="text-decoration: none;">download</p>
     </a>
 </div
 """
-TEMPLATE_VIDEO = """
+
+TEMPLATE_TEXT = """
 <div>
-    <video width="320" height="500" src="{FILENAME}" autoplay preload controls>
-        Your browser does not support the video tag.
-    </video>
+    <iframe src="{FILENAME}" id="text" style="border:0; border-left: 6px solid #ccc!important; border-color: #D3D3D3!important;"></iframe>
     <p>Filename: {FILENAME}</p>
     <a href="{FILENAME}" style="text-decoration: none;" download>
-        <p>download</p>
+        <p style="text-decoration: none;">download</p>
     </a>
+</div>
+    <script defer>
+        var id = 'text'
+        document.getElementById("text").height = document.getElementById(id).contentWindow.document.body.scrollHeight + "px"
+        document.getElementById("text").width= document.getElementById(id).contentWindow.document.body.scrollWidth + "px"
+    </script>
+"""
+
+TEMPLATE_VIDEO = """
+<div>
+    <video src="{FILENAME}" autoplay preload controls>
+        Your browser does not support the video tag.
+    </video>
+    <div style=""> 
+        <div style="display: inline-block">
+            <p>Filename: {FILENAME}</p>
+        </div>
+        <div style="display: inline-block; float: right;">
+            <a href="{FILENAME}" style="text-decoration: none; float: right;" download>
+                <p>download</p>
+            </a> 
+        </div>
+    </div>
 </div
 """
+
 TEMPLATE_ERROR = """
 <div>
     <p>{MESSAGE}</p>
     <a href="http://{HOST}:{PORT}">Return to home</a><br>
 </div
 """
+
 TEMPLATE_PDF = """
 <!DOCTYPE html>
 <html>
@@ -99,13 +124,13 @@ FULL_TEMPLATE = """
     <head>
         <title>Ship</title>
         <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <p style="">file cannot be view but will download</p>
-        <a href="{FILENAME}"  style="text-decoration: none;" download>
+        <p style="">file cannot be viewed but will download</p>
+        <a href="{FILENAME}" style="text-decoration: none;" download>
             <p>download</p>
         </a>
     </body>
 </html>
 """
-__all__ = [BASE_TEMPLATE, TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO, TEMPLATE_ERROR, TEMPLATE_PDF, FULL_TEMPLATE ]

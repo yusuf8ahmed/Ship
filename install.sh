@@ -1,7 +1,6 @@
 echo "Welcome to Ship:
 Ship is a simple python command line application
-made to ease the transfer of files with the use 
-of the internet.
+that makes it easy to move files between your personal devices.
 "
 
 read -r -p "Proceed with installation? [y/n]:  " response
