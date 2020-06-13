@@ -6,7 +6,7 @@ Ship is Developed on MacOS Catalina and should work with any Mac OS X 10.7 (Lion
 
 ## Installation
 1. clone this repo with the lastest tag <br>
-`git clone https://github.com/yusuf8ahmed/Ship.git --branch v0.0.1.2 --single-branch`
+`git clone https://github.com/yusuf8ahmed/Ship.git --branch v0.0.1.3 --single-branch`
 2. go into the Ship folder<br>
 `cd Ship`
 3. and open the terminal and run <br>
@@ -17,7 +17,6 @@ Ship is Developed on MacOS Catalina and should work with any Mac OS X 10.7 (Lion
 `bash unistall.sh`
 
 # Releases
-
 ## alpha release v0.0.1.1
 initial release
 
@@ -25,6 +24,9 @@ initial release
 template decision error fixed <br>
 text template fixed <br>
 error raising error fixed <br>
+
+## alpha release v0.0.1.3
+build dist errors <br>
 
 # Issues
 ## Templating
