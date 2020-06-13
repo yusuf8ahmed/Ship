@@ -74,7 +74,7 @@ TEMPLATE_VIDEO = """
             <p>Filename: {FILENAME}</p>
         </div>
         <div style="display: inline-block;">
-            <a href="{FILENAME}" style="text-decoration: none; float: right;" download>
+            <a href="{FILENAME}" style="text-decoration: none;" download>
                 <p>download</p>
             </a> 
         </div>
