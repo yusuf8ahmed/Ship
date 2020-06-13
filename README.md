@@ -1,6 +1,6 @@
 # Ship
 Ship is a command line application that makes transferring files from a computer to a phone or another computer easy <br>
-Ship is Developed on MacOS Catalina and should work with any MacOS version
+Ship is Developed on MacOS Catalina and should work with any Mac OS X 10.7 (Lion) or newer
 
 # MacOS
 

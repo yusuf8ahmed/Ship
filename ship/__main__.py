@@ -1,4 +1,3 @@
-# -*- Mode: Python; tab-width: 4 -*-
 import os
 # Logging
 import time
@@ -37,7 +36,8 @@ else:
 # source env/bin/activate
 
 # rm -rf build dist
-# pyinstaller cli.spec
+# python3.7 -m PyInstaller cli.spec
+# [("ship/favicon.ico", "files"), ("ship/demo_defer.js", "files")]
 
 # cli stuff
 parser = argparse.ArgumentParser(description="""Send file to phone or other computers. Make sure to kill this process after completetion""")
@@ -60,10 +60,12 @@ PORT = args.port
 
 # sharing file config
 FILENAME, frameinfo = args.file, getframeinfo(currentframe())
+#FILENAME = args.file
 if type(FILENAME) != str:
-    raise SystemExit("Ship: line {}: filename argument can only be of type string not {}".format(frameinfo.lineno, type(FILENAME)))
+    raise SystemExit("Ship: line {}: filename argument can only be of type string not {}".format(frameinfo.lineno , type(FILENAME)))
 try:
     MIMETYPE, frameinfo = mimetypes.guess_type(FILENAME), getframeinfo(currentframe())
+    #MIMETYPE = mimetypes.guess_type(FILENAME)
     TYPE = MIMETYPE[0].split("/")[0]
 except:
     rep = """please report file type on the github issues page:\nhttps://github.com/yusuf8ahmed/Ship/issues """
