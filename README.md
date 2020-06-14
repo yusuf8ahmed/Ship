@@ -71,6 +71,9 @@ float right on all templates <br>
 ## alpha release v0.0.1.5
 build dist errors <br>
 
+## alpha release v0.0.1.6
+help file update <br>
+
 # Issues
 ## Templating
 Since the template are loaded in with python format method anything the uses curly braces will cause an error which include: any Javascript function, if statments, try - execpt blocks and embedded css.
