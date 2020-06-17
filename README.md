@@ -5,14 +5,20 @@ Ship is Developed on MacOS Catalina and should work on all platforms that python
 <a href="https://www.producthunt.com/posts/ship-9?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-ship-9" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=206345&theme=light" alt="Ship - The best way to move files between your devices | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
 
 # All platforms
+1. pip is required to download ship
+2. 
 
 ## Installation
-1. install from pip
-`pip install shipapp`
+> install from pip <br>
+```bash
+pip install shipapp
+```
 
 ## Uninstallation
-1. uninstall from pip
-`pip uninstall shipapp`
+> uninstall from pip <br>
+```bash
+pip uninstall shipapp
+```
 
 # Usage
 
@@ -35,8 +41,6 @@ Sun Jun 14 11:19:34 2020 Sharing Server Starts text - http://192.168.2.178:9999
 
 ## Advanced Information
 ```bash 
-
-abdulwahid@Abdulwahid ~ % ship -h
 usage: ship [-h] [-p [port]] [-q] [-V] [file]
 
 Send file to phone or other computers. Make sure to kill this process after completetion
@@ -47,32 +51,39 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -p [port], --port [port]
+  -p [port], --port [port] 
                         port to be shared one
   -q, --qrcode          if flagged qrcode will be in new tab
   -V, --version         show program's version number and exit
 ```
 
 # Releases
-## alpha release v0.0.1.1
-initial release
+## alpha release v0.0.1.7
+full release on pypi <br>
+support for inline and new tab qrcodes <br>
+new -q, --qrcode cli flag <br>
+new -V, -version cli flag <br>
+more readable errors <br>
+
+## alpha release v0.0.1.6
+help file update <br>
+
+## alpha release v0.0.1.5
+build dist errors <br>
+
+## alpha release v0.0.1.4
+float right on all templates <br>
+
+## alpha release v0.0.1.3
+build dist errors <br>
 
 ## alpha release v0.0.1.2
 template decision error fixed <br>
 text template fixed <br>
 error raising error fixed <br>
 
-## alpha release v0.0.1.3
-build dist errors <br>
-
-## alpha release v0.0.1.4
-float right on all templates <br>
-
-## alpha release v0.0.1.5
-build dist errors <br>
-
-## alpha release v0.0.1.6
-help file update <br>
+## alpha release v0.0.1.1
+initial release
 
 # Issues
 ## Templating
