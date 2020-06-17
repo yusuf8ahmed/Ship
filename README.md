@@ -59,12 +59,13 @@ optional arguments:
 ```
 
 # Releases
-## alpha release v0.0.1.7
+## alpha release v0.0.2.0
 full release on pypi <br>
 support for inline and new tab qrcodes <br>
 new -q, --qrcode cli flag <br>
 new -V, -version cli flag <br>
 more readable errors <br>
+git clone installation is not long available <br>
 
 ## alpha release v0.0.1.6
 help file update <br>
