@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 BASE_TEMPLATE = """
 <!DOCTYPE html>
 <html>

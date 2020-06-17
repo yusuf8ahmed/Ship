@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+
+# Third party package
+# load qrcode
+import qrcode
+
+# Standard package
+# os.path operations
 import os
 # Logging
 import time
@@ -11,28 +19,22 @@ import argparse
 import mimetypes
 # Basic http server
 from http.server import BaseHTTPRequestHandler, HTTPServer
-# HTML templates
+# Get line number
 from inspect import currentframe, getframeinfo
-# Get line 
 
-if hasattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):
-    #running in a PyInstaller bundle
-    from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
-    from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
-    from .templates import TEMPLATE_PDF
-    #files
-    bdir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-    ICO_FILENAME = os.path.join(bdir, "files/favicon.ico")
-    JS_FILENAME = os.path.join(bdir, "files/demo_defer.js")
-else:
-    #running in a normal Python process
-    from templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
-    from templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
-    from templates import TEMPLATE_PDF
-    # files
-    ICO_FILENAME = os.path.join(os.path.dirname(__file__), "favicon.ico") 
-    JS_FILENAME = os.path.join(os.path.dirname(__file__), "demo_defer.js")
-    
+# Local Import
+#HTML templates
+from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
+from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
+from .templates import TEMPLATE_PDF
+# Files 
+ICO_FILENAME = os.path.join(os.path.dirname(__file__), "favicon.ico") 
+JS_FILENAME = os.path.join(os.path.dirname(__file__), "demo_defer.js")
+# Qrcode
+QR = qrcode.QRCode()
+# version
+version = "0.0.1.7"
+
 # source env/bin/activate
 
 # rm -rf build dist
@@ -42,6 +44,7 @@ else:
 # git init
 # git status
 # git add .
+# git init && git status && git add .
 # git commit -m "alpha release v0.0.1.x"
 # git push origin master
 
@@ -49,11 +52,6 @@ else:
 # git push origin v0.0.1.x
 
 # cli stuff
-parser = argparse.ArgumentParser(description="""Send file to phone or other computers. Make sure to kill this process after completetion""")
-parser.add_argument('file', type=str, nargs='?', help='file to be shared')
-parser.add_argument('-p','--port', type=int ,default=9999, metavar='file', nargs='?', help='port to be shared one')
-args = parser.parse_args()
-
 def local_address():
     """Return the/a network-facing IP number for this system."""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
@@ -62,23 +60,58 @@ def local_address():
     s.close()
     return local
 
+def display_qrcode(option, data):
+    """display qrcode either in terminal or new window"""
+    QR.add_data(data)
+    if option == True:
+        im = QR.make_image()
+        im.show()
+    else:
+        QR.print_ascii(invert=1)
+    
+class Colors:
+    # Colors for terminal
+    Black = "\u001b[30m"
+    Red = "\u001b[31m"
+    Green = "\u001b[32m"
+    Yellow = "\u001b[33m"
+    Blue = "\u001b[34m"
+    Magenta = "\u001b[35m"
+    Cyan = "\u001b[36m"
+    White = "\u001b[37m"
+    Reset = "\u001b[0m"
+
+qr_help = "if your phone is having trouble reading qrcode use flag -q:{} ship -q [FILENAME]{}".format(Colors.Green,Colors.Reset)
+
+parser = argparse.ArgumentParser(
+    description="""Send file to phone or other computers. Make sure to kill this process after completetion\n{}""".format(qr_help)
+    , formatter_class=argparse.RawTextHelpFormatter)
+parser.add_argument('file', type=str, nargs='?', help='file to be shared')
+parser.add_argument('-p','--port', type=int, default=9999, metavar='port', nargs='?', help='port to be shared one')
+parser.add_argument('-q','--qrcode', action='store_true', help='if flagged qrcode will be in new tab')
+parser.add_argument('-V', '--version', action='version', version="Ship {}".format(version))
+args = parser.parse_args()
+
 # CONST
 # http server config
 HOST = local_address()
 PORT = args.port
+QR_OPTION = args.qrcode
 
 # sharing file config
 FILENAME, frameinfo = args.file, getframeinfo(currentframe())
-#FILENAME = args.file
 if type(FILENAME) != str:
     raise SystemExit("Ship: line {}: filename argument can only be of type string not {}".format(frameinfo.lineno , type(FILENAME)))
 try:
-    MIMETYPE, frameinfo = mimetypes.guess_type(FILENAME), getframeinfo(currentframe())
-    #MIMETYPE = mimetypes.guess_type(FILENAME)
+    MIMETYPE = mimetypes.guess_type(FILENAME)
     TYPE = MIMETYPE[0].split("/")[0]
-except:
+except BaseException as e:
+    _, _, exc_tb = sys.exc_info()
     rep = """please report file type on the github issues page:\nhttps://github.com/yusuf8ahmed/Ship/issues """
-    raise SystemExit("""Ship: line {}: file type is not supported {}, {}\n{}""".format(frameinfo.lineno, FILENAME, MIMETYPE,rep))
+    if MIMETYPE == (None, None):
+        raise SystemExit("""Ship: line {}: file type is not supported ({}, {})\n{}""".format(exc_tb.tb_lineno, FILENAME, MIMETYPE,rep))
+    else:
+        raise SystemExit("""Ship: line {}: {} ({}, {})\n{}""".format(exc_tb.tb_lineno, e, FILENAME, MIMETYPE,rep))
 try:
     with open(FILENAME, "rb") as f:
         FILE = f.read()
@@ -121,7 +154,7 @@ def get_response(name, settings):
 
 def main():
     class MyServer(BaseHTTPRequestHandler):
-        def do_GET(self):
+        def do_GET(self):             
             if self.path == "/{}".format(FILENAME):
                 self.log_message("Loading {}, {}".format(FILENAME, MIMETYPE[0]))
                 self.send_response(200, "OK")
@@ -173,16 +206,21 @@ def main():
                 self.send_header('Content-Length', len(res.encode('utf-8')))
                 self.end_headers()
                 self.wfile.write(res.encode())
+    try:
+        myServer = HTTPServer((HOST, PORT), MyServer)
+    except OSError as e:
+        _, _, exc_tb = sys.exc_info()
+        raise SystemExit("Ship: line {}: {}".format(exc_tb.tb_lineno, e))
 
-    myServer = HTTPServer((HOST, PORT), MyServer)
     print("Make sure to click 'ctrl-c' to kill after usage")
     print("{} Sharing Server Starts {} - http://{}:{}".format(time.asctime(),TYPE,HOST,PORT))
+    display_qrcode(QR_OPTION, "http://{}:{}".format(HOST,PORT))
+    
     try:
         myServer.serve_forever()
     except KeyboardInterrupt:
         myServer.server_close()
-        print("{} Sharing Server Stop - http://{}:{}".format(time.asctime(),HOST,PORT))
-        sys.exit()
+        raise SystemExit("{} Sharing Server Stop - http://{}:{}".format(time.asctime(), HOST, PORT))
         pass
     myServer.server_close()
     print("{} Sharing Server Stop - http://{}:{}".format(time.asctime(),HOST,PORT))
