@@ -1,87 +1,39 @@
 #!/usr/bin/env python3
+#source env/bin/activate
 
-# Third party package
-# load qrcode
-import qrcode
-
-# Standard package
-# os.path operations
-import os
-# Logging
-import time
-# for exiting
-import sys
-# get local ip address
-import socket
-# cli 
-import argparse
-# to find mimetype of specific files
-import mimetypes
-# Basic http server
-from http.server import BaseHTTPRequestHandler, HTTPServer
-# Get line number
-from inspect import currentframe, getframeinfo
-
-# Local Import
-#HTML templates
-from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
-from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
-from .templates import TEMPLATE_PDF
-# Files 
-ICO_FILENAME = os.path.join(os.path.dirname(__file__), "favicon.ico") 
-JS_FILENAME = os.path.join(os.path.dirname(__file__), "demo_defer.js")
-# Qrcode
-QR = qrcode.QRCode()
 # version
 version = "0.0.1.7"
 
-# source env/bin/activate
+# Third party package
+import qrcode #load qrcode
 
-# rm -rf build dist
-# python3.7 -m PyInstaller cli.spec
-# [("ship/favicon.ico", "files"), ("ship/demo_defer.js", "files")]
+# Standard package
+import os # os.path operations
+import time # Logging
+import sys # for exiting
+import socket # get local ip address
+import argparse # cli
+import mimetypes # to find mimetype of specific files
+from http.server import BaseHTTPRequestHandler, HTTPServer # Basic http server
+from inspect import currentframe, getframeinfo # Get line number
 
-# git init
-# git status
-# git add .
-# git init && git status && git add .
-# git commit -m "alpha release v0.0.1.x"
-# git push origin master
+# Local Import 
+# HTML templates
+from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
+from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
+from .templates import TEMPLATE_PDF
+# Color for terminal
+from .colors import Colors
 
-# git tag -a v0.0.1.x -m "alpha release v0.0.1.x"
-# git push origin v0.0.1.x
+# Files 
+ICO_FILENAME = os.path.join(os.path.dirname(__file__), "favicon.ico") 
+JS_FILENAME = os.path.join(os.path.dirname(__file__), "demo_defer.js")
 
-# cli stuff
-def local_address():
-    """Return the/a network-facing IP number for this system."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
-    s.connect(("google.com", 80))
-    local = s.getsockname()[0]
-    s.close()
-    return local
+# QRcode
+QR = qrcode.QRCode()
 
-def display_qrcode(option, data):
-    """display qrcode either in terminal or new window"""
-    QR.add_data(data)
-    if option == True:
-        im = QR.make_image()
-        im.show()
-    else:
-        QR.print_ascii(invert=1)
-    
-class Colors:
-    # Colors for terminal
-    Black = "\u001b[30m"
-    Red = "\u001b[31m"
-    Green = "\u001b[32m"
-    Yellow = "\u001b[33m"
-    Blue = "\u001b[34m"
-    Magenta = "\u001b[35m"
-    Cyan = "\u001b[36m"
-    White = "\u001b[37m"
-    Reset = "\u001b[0m"
-
-qr_help = "if your phone is having trouble reading qrcode use flag -q:{} ship -q [FILENAME]{}".format(Colors.Green,Colors.Reset)
+#COMMAND LINE ARGUMENTS
+qr_help = "if your phone is having trouble reading QRcode use flag -q:{} ship -q [FILENAME]{}".format(Colors.Green,Colors.Reset)
 
 parser = argparse.ArgumentParser(
     description="""Send file to phone or other computers. Make sure to kill this process after completetion\n{}""".format(qr_help)
@@ -92,16 +44,46 @@ parser.add_argument('-q','--qrcode', action='store_true', help='if flagged qrcod
 parser.add_argument('-V', '--version', action='version', version="Ship {}".format(version))
 args = parser.parse_args()
 
+def local_address():
+    """
+    Description: returns a network-facing IP number for this system.
+
+    Returns:
+        ip_address (str)
+    """
+    socket_obj = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+    socket_obj.connect(("google.com", 80))
+    ip_address = socket_obj.getsockname()[0]
+    socket_obj.close()
+    return ip_address
+
+def display_qrcode(option, data):
+    """
+    Description: display qrcode either in terminal or new window
+    
+    Args:
+        option (bool): 
+        data (str): [description]
+    """
+    QR.add_data(data)
+    if option == True:
+        im = QR.make_image()
+        im.show()
+    else:
+        QR.print_ascii(invert=1)    
+
 # CONST
-# http server config
-HOST = local_address()
-PORT = args.port
 QR_OPTION = args.qrcode
 
-# sharing file config
+# HTTP server config
+HOST = local_address()
+PORT = args.port
+
+# Sharing file config
 FILENAME, frameinfo = args.file, getframeinfo(currentframe())
 if type(FILENAME) != str:
     raise SystemExit("Ship: line {}: filename argument can only be of type string not {}".format(frameinfo.lineno , type(FILENAME)))
+
 try:
     MIMETYPE = mimetypes.guess_type(FILENAME)
     TYPE = MIMETYPE[0].split("/")[0]
@@ -112,6 +94,7 @@ except BaseException as e:
         raise SystemExit("""Ship: line {}: file type is not supported ({}, {})\n{}""".format(exc_tb.tb_lineno, FILENAME, MIMETYPE,rep))
     else:
         raise SystemExit("""Ship: line {}: {} ({}, {})\n{}""".format(exc_tb.tb_lineno, e, FILENAME, MIMETYPE,rep))
+
 try:
     with open(FILENAME, "rb") as f:
         FILE = f.read()

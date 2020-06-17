@@ -13,7 +13,7 @@ def from_here(relative_path):
 with open('requirements.txt') as f: 
     requirements = f.readlines() 
 
-# test.pypi
+#? test.pypi
 
 #- rm -rf build dist shipu.egg-info
 #- python setup.py sdist bdist_wheel 
@@ -21,7 +21,7 @@ with open('requirements.txt') as f:
 
 # pip install --index-url https://test.pypi.org/simple/ --upgrade --no-cache-dir --extra-index-url=https://pypi.org/simple/ shipapp
 
-# pypi
+#? pypi
 
 # env\Scripts\activate && python setup.py sdist bdist_wheel && python -m twine upload --skip-existing dist/*
 
@@ -29,6 +29,19 @@ with open('requirements.txt') as f:
 #- python setup.py sdist bdist_wheel 
 # python -m twine upload --skip-existing dist/*
 # python -m twine upload dist/*
+
+#? git steps
+
+# git init
+# git status
+# git add .
+# git init && git status && git add .
+# git commit -m "alpha release v0.0.1.x"
+# git push origin master
+
+# git tag -a v0.0.1.x -m "alpha release v0.0.1.x"
+# git push origin v0.0.1.x
+
 
 setup(
     name="shipapp",
