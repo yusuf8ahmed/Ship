@@ -5,8 +5,9 @@ Ship is Developed on MacOS Catalina and should work on all platforms that python
 <a href="https://www.producthunt.com/posts/ship-9?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-ship-9" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=206345&theme=light" alt="Ship - The best way to move files between your devices | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
 
 # All platforms
-1. pip is required to download ship
-2. 
+* pip is required to download ship
+* for new windows users use click [Python 3.7.7](https://www.python.org/ftp/python/3.7.7/python-3.7.7-amd64-webinstall.exe)
+* for new macOS(for OS X 10.9 and later) users use click [Python 3.7.7](https://www.python.org/ftp/python/3.7.7/python-3.7.7-macosx10.9.pkg)
 
 ## Installation
 > install from pip <br>
