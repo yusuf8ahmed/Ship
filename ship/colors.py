@@ -1,6 +1,7 @@
 
 class Colors:
-    """Colors for terminal
+    """
+    Description: Colors for terminal
     """
     Black = "\u001b[30m"
     Red = "\u001b[31m"

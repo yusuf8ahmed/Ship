@@ -18,12 +18,9 @@ from http.server import BaseHTTPRequestHandler, HTTPServer # Basic http server
 from inspect import currentframe, getframeinfo # Get line number
 
 # Local Import 
-# HTML templates
-from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
-from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
-from .templates import TEMPLATE_PDF
+from HTTPFileserver import HTTP_File_Server
 # Color for terminal
-from .colors import Colors
+from colors import Colors
 
 # Files 
 ICO_FILENAME = os.path.join(os.path.dirname(__file__), "favicon.ico") 
@@ -62,8 +59,8 @@ def display_qrcode(option, data):
     Description: display qrcode either in terminal or new window
     
     Args:
-        option (bool): 
-        data (str): [description]
+        option (bool): in line (False) vs new/split tab (True) QR code
+        data (str): URL of the HTTP server
     """
     QR.add_data(data)
     if option == True:
@@ -84,6 +81,7 @@ FILENAME, frameinfo = args.file, getframeinfo(currentframe())
 if type(FILENAME) != str:
     raise SystemExit("Ship: line {}: filename argument can only be of type string not {}".format(frameinfo.lineno , type(FILENAME)))
 
+# find mimetype
 try:
     MIMETYPE = mimetypes.guess_type(FILENAME)
     TYPE = MIMETYPE[0].split("/")[0]
@@ -95,6 +93,7 @@ except BaseException as e:
     else:
         raise SystemExit("""Ship: line {}: {} ({}, {})\n{}""".format(exc_tb.tb_lineno, e, FILENAME, MIMETYPE,rep))
 
+# file to be shared to bytes
 try:
     with open(FILENAME, "rb") as f:
         FILE = f.read()
@@ -106,98 +105,21 @@ try:
     with open(ICO_FILENAME, "rb") as f:
         ICO = f.read()
 except BaseException as e:
-    raise SystemExit("Ship: favicon reading error ({}) : {}".format(FILENAME,e))  
-
-TYPES = {
-    "audio":TEMPLATE_AUDIO ,
-    "image":TEMPLATE_IMAGE,        
-    "text":TEMPLATE_TEXT,
-    "video":TEMPLATE_VIDEO,
-    "error":TEMPLATE_ERROR,
-}
-
-TYPES_SPECIAL = {
-    "application/pdf": TEMPLATE_PDF,
-}
-
-def get_response(name, settings):
-    try:
-        r = BASE_TEMPLATE.format(**{
-            "TEMPLATE":TYPES.get(name).format(**settings),
-            "HOST": HOST,
-            "PORT":PORT})
-    except BaseException as e:
-        print(e)
-        try:
-            settings.update({"HOST": HOST, "PORT":PORT})
-            r = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**settings)
-        except BaseException as e:
-            r = FULL_TEMPLATE.format(**settings)
-    return r
-
+    raise SystemExit("Ship: favicon reading error ({}) : {}".format(FILENAME,e)) 
+ 
+def HTTPhandler(*args):
+    HTTP_File_Server(FILENAME, FILE, ICO, JS_FILENAME, HOST, PORT, MIMETYPE, *args)
+    
 def main():
-    class MyServer(BaseHTTPRequestHandler):
-        def do_GET(self):             
-            if self.path == "/{}".format(FILENAME):
-                self.log_message("Loading {}, {}".format(FILENAME, MIMETYPE[0]))
-                self.send_response(200, "OK")
-                self.send_header("Content-Type", MIMETYPE[0])
-                self.send_header('Content-Length', len(FILE))
-                self.end_headers()
-                self.wfile.write(FILE)
-
-            elif self.path == "/files/favicon.ico":
-                self.log_message("Loading favicon")
-                self.send_response(200, "OK")
-                self.send_header("Content-Type", "image/x-icon")
-                self.send_header('Content-Length', len(ICO))
-                self.end_headers()
-                self.wfile.write(ICO)
-
-            elif self.path == "/demo_defer.js":
-                with open(JS_FILENAME, "rb") as f:
-                    JS = f.read()
-                self.log_message("Loading pdfjs")
-                self.send_response(200, "OK")
-                self.send_header("Content-Type", "text/javascript")
-                self.send_header('Content-Length', len(JS))
-                self.end_headers()
-                self.wfile.write(JS)
-
-            elif self.path == "/":
-                self.log_message("Loading in main")
-                res = get_response(TYPE, {
-                    "FILENAME":FILENAME,
-                    "MIMETYPE":MIMETYPE[0],
-                    "HOST":HOST,
-                    "PORT":PORT})
-                self.send_response(200, "OK")
-                self.send_header("Content-type", "text/html")
-                self.send_header('Content-Length', len(res.encode('utf-8')))
-                self.end_headers()
-                self.wfile.write(res.encode())
-
-            else:
-                self.log_message("Loading in error")
-                res = get_response("error", {
-                    "HOST":HOST,
-                    "PORT":PORT,
-                    "MESSAGE":"This is an illegal route"
-                    })
-                self.send_response(404, "Not Found")
-                self.send_header("Content-type", "text/html")
-                self.send_header('Content-Length', len(res.encode('utf-8')))
-                self.end_headers()
-                self.wfile.write(res.encode())
     try:
-        myServer = HTTPServer((HOST, PORT), MyServer)
+        myServer = HTTPServer((HOST, PORT), HTTPhandler)
     except OSError as e:
         _, _, exc_tb = sys.exc_info()
         raise SystemExit("Ship: line {}: {}".format(exc_tb.tb_lineno, e))
 
     print("Make sure to click 'ctrl-c' to kill after usage")
-    print("{} Sharing Server Starts {} - http://{}:{}".format(time.asctime(),TYPE,HOST,PORT))
-    display_qrcode(QR_OPTION, "http://{}:{}".format(HOST,PORT))
+    print("{} Sharing Server Starts {} - http://{}:{}".format(time.asctime(), TYPE, HOST, PORT))
+    display_qrcode(QR_OPTION, "http://{}:{}".format(HOST, PORT))
     
     try:
         myServer.serve_forever()
@@ -206,7 +128,7 @@ def main():
         raise SystemExit("{} Sharing Server Stop - http://{}:{}".format(time.asctime(), HOST, PORT))
         pass
     myServer.server_close()
-    print("{} Sharing Server Stop - http://{}:{}".format(time.asctime(),HOST,PORT))
+    print("{} Sharing Server Stop - http://{}:{}".format(time.asctime(), HOST, PORT))
 
 if __name__ == "__main__":
     main()
