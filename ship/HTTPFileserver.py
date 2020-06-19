@@ -2,9 +2,9 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer # Basic http server
 
 # HTML templates
-from templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
-from templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
-from templates import TEMPLATE_PDF
+from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
+from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
+from .templates import TEMPLATE_PDF
 
 TYPES = {
     "audio":TEMPLATE_AUDIO ,
@@ -53,7 +53,7 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(self.FILE)
 
-        elif self.path == "/files/favicon.ico":
+        elif self.path == "/favicon.ico":
             self.log_message("Loading favicon")
             self.send_response(200, "OK")
             self.send_header("Content-Type", "image/x-icon")
@@ -103,3 +103,6 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(res.encode('utf-8')))
             self.end_headers()
             self.wfile.write(res.encode())
+            
+    def do_POST(self):
+        self.log_message("HTTP POST method is not allowed")

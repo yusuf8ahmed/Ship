@@ -15,7 +15,7 @@ with open('requirements.txt') as f:
 
 #? test.pypi
 
-#- rm -rf build dist shipu.egg-info
+#- rm -rf build dist shipapp.egg-info
 #- python setup.py sdist bdist_wheel 
 #- python3 -m twine upload --repository testpypi dist/*
 
@@ -23,9 +23,7 @@ with open('requirements.txt') as f:
 
 #? pypi
 
-# env\Scripts\activate && python setup.py sdist bdist_wheel && python -m twine upload --skip-existing dist/*
-
-#- rm -rf build dist shipu.egg-info
+#- rm -rf build dist shipapp.egg-info
 #- python setup.py sdist bdist_wheel 
 # python -m twine upload --skip-existing dist/*
 # python -m twine upload dist/*

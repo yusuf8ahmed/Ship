@@ -5,13 +5,11 @@ BASE_TEMPLATE = """
 <html>
     <head>
         <title>Ship</title>
-        <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
-        <div style="top: 0;bottom: 0;left: 0;right: 0;">
+    <body style="top: 0;bottom: 0;left: 0;right: 0;">
         {TEMPLATE}        
-        <div>
     </body>
 </html>
 """
@@ -30,7 +28,7 @@ TEMPLATE_AUDIO = """
 """
 
 TEMPLATE_IMAGE = """
-<div >
+<div>
     <img src="{FILENAME}" alt="document" style="">
     <div style="">
         <p>Filename: {FILENAME}</p>
@@ -41,16 +39,6 @@ TEMPLATE_IMAGE = """
 </div>
 """
 
-TEMPLATE_TEXT_ = """
-<div>
-    <embed src="{FILENAME}" style="border:0 border-left: 6px solid #ccc; border-color: #D3D3D3!important;">
-    <p>Filename: {FILENAME}</p>
-    <a href="{FILENAME}" style="text-decoration: none;" download>
-        <p style="text-decoration: none;">download</p>
-    </a>
-</div
-"""
-
 TEMPLATE_TEXT = """
 <div>
     <iframe src="{FILENAME}" id="text" style="border:0; border-left: 6px solid #ccc!important; border-color: #D3D3D3!important;"></iframe>
@@ -59,11 +47,11 @@ TEMPLATE_TEXT = """
         <p style="text-decoration: none;">download</p>
     </a>
 </div>
-    <script defer>
-        var id = 'text'
-        document.getElementById("text").height = document.getElementById(id).contentWindow.document.body.scrollHeight + "px"
-        document.getElementById("text").width= document.getElementById(id).contentWindow.document.body.scrollWidth + "px"
-    </script>
+<script defer>
+    var id = 'text'
+    document.getElementById("text").height = document.getElementById(id).contentWindow.document.body.scrollHeight + "px"
+    document.getElementById("text").width= document.getElementById(id).contentWindow.document.body.scrollWidth + "px"
+</script>
 """
 
 TEMPLATE_VIDEO = """
@@ -73,11 +61,11 @@ TEMPLATE_VIDEO = """
     </video>
     <div style=""> 
         <div style="display: inline-block">
-            <p>Filename: {FILENAME}</p>
+            <p>File: {FILENAME}</p>
         </div>
-        <div style="display: inline-block;">
+        <div>
             <a href="{FILENAME}" style="text-decoration: none;" download>
-                <p>download</p>
+                <p style="text-decoration: none;">download</p>
             </a> 
         </div>
     </div>
@@ -96,7 +84,7 @@ TEMPLATE_PDF = """
 <html>
     <head>
         <title>Ship</title>
-        <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>        
     </head>
     <body>
@@ -107,7 +95,7 @@ TEMPLATE_PDF = """
                 &nbsp; &nbsp;
                 <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
                 <a href="{FILENAME}" style="text-decoration: none;" download>
-                    <p>download</p>
+                    <p style="text-decoration: none;">download</p>
                 </a>
             </div>
             <canvas id="the-canvas" style="border: 1px solid black; direction: ltr;"></canvas>
@@ -125,13 +113,14 @@ FULL_TEMPLATE = """
 <html>
     <head>
         <title>Ship</title>
-        <link rel="shortcut icon" href="/files/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
-        <p style="">file cannot be viewed but will download</p>
+    <body style="top: 0; bottom: 0;left: 0;right: 0;">
+        <p>file cannot be viewed but can download</p>
+        <p>File: {FILENAME}</p>
         <a href="{FILENAME}" style="text-decoration: none;" download>
-            <p>download</p>
+            <p style="text-decoration: none;">download</p>
         </a>
     </body>
 </html>

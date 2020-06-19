@@ -1,4 +1,3 @@
-
 class Colors:
     """
     Description: Colors for terminal
