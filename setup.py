@@ -34,11 +34,11 @@ with open('requirements.txt') as f:
 # git status
 # git add .
 # git init && git status && git add .
-# git commit -m "alpha release v0.0.1.x"
+# git commit -m "alpha release v0.0.2.x"
 # git push origin master
 
-# git tag -a v0.0.1.x -m "alpha release v0.0.1.x"
-# git push origin v0.0.1.x
+# git tag -a v0.0.2.x -m "alpha release v0.0.2.x"
+# git push origin v0.0.2.x
 
 
 setup(
