@@ -40,7 +40,6 @@ with open('requirements.txt') as f:
 # git tag -a v0.0.2.x -m "alpha release v0.0.2.x"
 # git push origin v0.0.2.x
 
-
 setup(
     name="shipapp",
     version="0.0.1.7",
@@ -66,7 +65,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords ='ship shipu file transfer shiplite',
+    keywords ='ship shipapp file transfer shiplite',
     python_requires='>=3',
     zip_safe = False
 )

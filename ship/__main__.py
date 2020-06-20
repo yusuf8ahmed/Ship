@@ -19,11 +19,11 @@ if sys.version_info >= (3, 0):
     from inspect import currentframe, getframeinfo # Get line number
 
     # Local Import 
-    from .HTTPFileserver import HTTP_File_Server
+    from HTTPFileserver import HTTP_File_Server
     # Color for terminal
-    from .colors import Colors
+    from colors import Colors
     # Ship Error for terminal
-    from .ShipError import ShipError
+    from ShipError import ShipError
 else:
     raise SystemExit("Ship: Python must be greater that version 3")
 
@@ -150,8 +150,8 @@ def HTTP_handler(*args):
     try:
         HTTP_File_Server(FILENAME, FILE, ICO, JS_FILENAME, HOST, PORT, MIMETYPE, *args)
     except BaseException as e:
-        _, _, exc_tb = sys.exc_info()
-        raise ShipError("{}".format(e), "{} : function HTTP_handler".format(exc_tb.tb_lineno))
+        r, t, exc_tb = sys.exc_info()
+        raise ShipError("{}{}{}".format(r,t,e), "{} : function HTTP_handler".format(exc_tb.tb_lineno))
 
 def create_server(HOST, PORT, HTTP_handler):
     """creates http server

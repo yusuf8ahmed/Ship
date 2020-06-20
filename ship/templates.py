@@ -14,6 +14,54 @@ BASE_TEMPLATE = """
 </html>
 """
 
+TEMPLATE_PDF = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ship</title>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>        
+    </head>
+    <body>
+        <div style="top: 0;bottom: 0;left: 0;right: 0;">
+            <div>
+                <button id="prev">Previous</button>
+                <button id="next">Next</button>
+                &nbsp; &nbsp;
+                <span> 
+                    Page: <span id="page_num"> </span> / <span id="page_count"> </span> 
+                </span>
+            </div>
+            <canvas id="the-canvas" style="border: 1px solid black; direction: ltr;"></canvas>
+        </div>
+        <a href="{FILENAME}" style="text-decoration: none;" download>
+            <p style="text-decoration: none;">download</p>
+        </a>
+        <script>var url = 'http://{HOST}:{PORT}/{FILENAME}';</script>
+        <script src="demo_defer.js" defer></script>
+    </body>
+</html>
+"""
+
+UNVIEWABLE_TEMPLATE = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ship</title>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="top: 0; bottom: 0;left: 0;right: 0;">
+        <p>File cannot be viewed but can download</p>
+        <p>File: {FILENAME}</p>
+        <a href="{FILENAME}" style="text-decoration: none;" download>
+            <p style="text-decoration: none;">download</p>
+        </a>
+    </body>
+</html>
+"""
+
+
 TEMPLATE_AUDIO = """
 <div>
     <audio controls>
@@ -77,51 +125,4 @@ TEMPLATE_ERROR = """
     <p>{MESSAGE}</p>
     <a href="http://{HOST}:{PORT}">Return to home</a><br>
 </div
-"""
-
-TEMPLATE_PDF = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Ship</title>
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>        
-    </head>
-    <body>
-        <div style="top: 0;bottom: 0;left: 0;right: 0;">
-            <div>
-                <button id="prev">Previous</button>
-                <button id="next">Next</button>
-                &nbsp; &nbsp;
-                <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-                <a href="{FILENAME}" style="text-decoration: none;" download>
-                    <p style="text-decoration: none;">download</p>
-                </a>
-            </div>
-            <canvas id="the-canvas" style="border: 1px solid black; direction: ltr;"></canvas>
-        </div>
-        <script>
-            var url = 'http://{HOST}:{PORT}/{FILENAME}';
-        </script>
-        <script src="demo_defer.js" defer></script>
-    </body>
-</html>
-"""
-
-FULL_TEMPLATE = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Ship</title>
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style="top: 0; bottom: 0;left: 0;right: 0;">
-        <p>file cannot be viewed but can download</p>
-        <p>File: {FILENAME}</p>
-        <a href="{FILENAME}" style="text-decoration: none;" download>
-            <p style="text-decoration: none;">download</p>
-        </a>
-    </body>
-</html>
 """

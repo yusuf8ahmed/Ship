@@ -1,10 +1,12 @@
 # Standard package
 from http.server import BaseHTTPRequestHandler, HTTPServer # Basic http server
-
+from http import HTTPStatus
 # HTML templates
-from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
-from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
-from .templates import TEMPLATE_PDF
+from templates import BASE_TEMPLATE, TEMPLATE_ERROR, UNVIEWABLE_TEMPLATE
+from templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
+from templates import TEMPLATE_PDF
+
+from ShipError import ShipError
 
 TYPES = {
     "audio":TEMPLATE_AUDIO ,
@@ -41,34 +43,31 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
                 settings.update({"HOST": self.HOST, "PORT": self.PORT})
                 r = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**settings)
             except BaseException as e:
-                r = FULL_TEMPLATE.format(**settings)
+                r = UNVIEWABLE_TEMPLATE.format(**settings)
         return r
-        
+    
+    def _set_response(self, statuscode, contenttype, contentlength):
+        self.send_response(statuscode, HTTPStatus(statuscode).name)
+        self.send_header("Content-Type", contenttype)
+        self.send_header('Content-Length', contentlength)
+        self.end_headers()
+
     def do_GET(self):             
         if self.path == "/{}".format(self.FILENAME):
             self.log_message("Loading {}, {}".format(self.FILENAME, self.MIMETYPE[0]))
-            self.send_response(200, "OK")
-            self.send_header("Content-Type", self.MIMETYPE[0])
-            self.send_header('Content-Length', len(self.FILE))
-            self.end_headers()
+            self._set_response(200, self.MIMETYPE[0], len(self.FILE))
             self.wfile.write(self.FILE)
 
         elif self.path == "/favicon.ico":
             self.log_message("Loading favicon")
-            self.send_response(200, "OK")
-            self.send_header("Content-Type", "image/x-icon")
-            self.send_header('Content-Length', len(self.ICO))
-            self.end_headers()
+            self._set_response(200, "image/x-icon", len(self.ICO))
             self.wfile.write(self.ICO)
 
         elif self.path == "/demo_defer.js":
+            self.log_message("Loading in pdf viewer")
             with open(self.JS_FILENAME, "rb") as f:
                 JS = f.read()
-            self.log_message("Loading pdfjs")
-            self.send_response(200, "OK")
-            self.send_header("Content-Type", "text/javascript")
-            self.send_header('Content-Length', len(JS))
-            self.end_headers()
+            self._set_response(200, "text/javascript", len(JS))
             self.wfile.write(JS)
 
         elif self.path == "/":
@@ -82,10 +81,7 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
                     "PORT":self.PORT
                 }
                 )
-            self.send_response(200, "OK")
-            self.send_header("Content-type", "text/html")
-            self.send_header('Content-Length', len(res.encode('utf-8')))
-            self.end_headers()
+            self._set_response(200, "text/html", len(res.encode('utf-8')))
             self.wfile.write(res.encode())
 
         else:
@@ -98,11 +94,11 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
                     "MESSAGE":"This is an illegal route"
                 }
                 )
-            self.send_response(404, "Not Found")
-            self.send_header("Content-type", "text/html")
-            self.send_header('Content-Length', len(res.encode('utf-8')))
-            self.end_headers()
+            self._set_response(404, "text/html", len(res.encode('utf-8')))
             self.wfile.write(res.encode())
             
     def do_POST(self):
-        self.log_message("HTTP POST method is not allowed")
+        self.log_message("Ship: POST request are not allowed ({})".format(self.path).encode('utf-8'))
+        ShipError("POST request are not allowed {}".format(self.path), ": HTTPFileserver.do_POST")
+
+        
