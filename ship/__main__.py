@@ -19,11 +19,11 @@ if sys.version_info >= (3, 0):
     from inspect import currentframe, getframeinfo # Get line number
 
     # Local Import 
-    from .HTTPFileserver import HTTP_File_Server
+    from HTTPFileserver import HTTP_File_Server
     # Color for terminal
-    from .colors import Colors
+    from colors import Colors
     # Ship Error for terminal
-    from .ShipError import ShipError
+    from ShipError import ShipError
 else:
     raise SystemExit("Ship: Python must be greater that version 3")
 

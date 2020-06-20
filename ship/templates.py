@@ -20,7 +20,7 @@ TEMPLATE_AUDIO = """
         <source src="{FILENAME}" type="{MIMETYPE}">
         Your browser does not support the audio element.
     </audio>
-    <p>Filename: {FILENAME}</p>
+    <p>Filepath: {FILENAME}</p>
     <a href="{FILENAME}" style="text-decoration: none;" download>
         <p style="text-decoration: none;">download</p>
     </a>
@@ -31,7 +31,7 @@ TEMPLATE_IMAGE = """
 <div>
     <img src="{FILENAME}" alt="document" style="">
     <div style="">
-        <p>Filename: {FILENAME}</p>
+        <p>Filepath: {FILENAME}</p>
         <a href="{FILENAME}" style="text-decoration: none; color: black;" download>
             <p style="text-decoration: none;">download</p>
         </a>    
@@ -42,7 +42,7 @@ TEMPLATE_IMAGE = """
 TEMPLATE_TEXT = """
 <div>
     <iframe src="{FILENAME}" id="text" style="border:0; border-left: 6px solid #ccc!important; border-color: #D3D3D3!important;"></iframe>
-    <p>Filename: {FILENAME}</p>
+    <p>Filepath: {FILENAME}</p>
     <a href="{FILENAME}" style="text-decoration: none;" download>
         <p style="text-decoration: none;">download</p>
     </a>
@@ -61,7 +61,7 @@ TEMPLATE_VIDEO = """
     </video>
     <div style=""> 
         <div style="display: inline-block">
-            <p>File: {FILENAME}</p>
+            <p>Filepath: {FILENAME}</p>
         </div>
         <div>
             <a href="{FILENAME}" style="text-decoration: none;" download>
@@ -94,12 +94,14 @@ TEMPLATE_PDF = """
                 <button id="next">Next</button>
                 &nbsp; &nbsp;
                 <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-                <a href="{FILENAME}" style="text-decoration: none;" download>
-                    <p style="text-decoration: none;">download</p>
-                </a>
+
             </div>
             <canvas id="the-canvas" style="border: 1px solid black; direction: ltr;"></canvas>
         </div>
+        <p>Filepath: {FILENAME}</p>
+        <a href="{FILENAME}" style="text-decoration: none;" download>
+            <p style="text-decoration: none;">download</p>
+        </a>
         <script>
             var url = 'http://{HOST}:{PORT}/{FILENAME}';
         </script>
@@ -118,7 +120,7 @@ FULL_TEMPLATE = """
     </head>
     <body style="top: 0; bottom: 0;left: 0;right: 0;">
         <p>file cannot be viewed but can download</p>
-        <p>File: {FILENAME}</p>
+        <p>Filepath: {FILENAME}</p>
         <a href="{FILENAME}" style="text-decoration: none;" download>
             <p style="text-decoration: none;">download</p>
         </a>

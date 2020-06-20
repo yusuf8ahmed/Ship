@@ -2,9 +2,9 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer # Basic http server
 
 # HTML templates
-from .templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
-from .templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
-from .templates import TEMPLATE_PDF
+from templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
+from templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
+from templates import TEMPLATE_PDF
 
 TYPES = {
     "audio":TEMPLATE_AUDIO ,
