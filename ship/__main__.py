@@ -1,215 +1,136 @@
 #!/usr/bin/env python3
-#source env/bin/activate
+# source env/bin/activate
 
-# version
-__version__ = "0.0.2.0"
-import sys # 
+"""entrypoint for console script (function main)
+and __main__.py is usually entry when calling from python
+'python ship []'
+"""
+import sys
+import multiprocessing as mp 
+import traceback
+import signal
+import threading
 
+__version__ = "0.0.3.0"
 if sys.version_info >= (3, 0):
     # Third party package
-    import qrcode #load qrcode
+    import qrcode  # load QR code
 
     # Standard package
-    import os # os.path operations
-    import time # Logging
-    import socket # get local ip address
-    import argparse # cli
-    import mimetypes # to find mimetype of specific files
-    from http.server import BaseHTTPRequestHandler, HTTPServer # Basic http server
-    from inspect import currentframe, getframeinfo # Get line number
-
-    # Local Import 
-    from HTTPFileserver import HTTP_File_Server
-    # Color for terminal
-    from colors import Colors
-    # Ship Error for terminal
-    from ShipError import ShipError
+    import os  # os.path operations
+    import time  # Logging
+    import argparse  # cli
+    import logging  # do logs
+    import webbrowser # open webbrowser
+    
+    #local imports
+    if str(__package__) == "ship":
+        # relative import work only when using pip as __package__ == "ship"
+        # very bad solution
+        from .httpfileserver import HTTP_File_Server  #get the http request handler class
+        from .colors import Colors  # Color for terminal
+        from .shiperror import ShipError, ShipPrint, ShipExit  # Ship Template Error and Print Class
+        from .funkship import local_address, random_port, display_qrcode
+        from .funkship import check_filename, mimetype_and_type, read_file
+        from .funkship import read_file_ico, create_server
+        from .funkship import command
+    else:
+        # absolute import only when running locally 
+        from httpfileserver import HTTP_File_Server  #get the http request handler class
+        from colors import Colors  # Color for terminal
+        from shiperror import ShipError, ShipPrint, ShipExit  # Ship Template Error and Print Class
+        from funkship import local_address, random_port, display_qrcode
+        from funkship import check_filename, mimetype_and_type, read_file
+        from funkship import read_file_ico, create_server
+        from funkship import command
 else:
-    raise SystemExit("Ship: Python must be greater that version 3")
-
-def local_address():
-    """
-    Description: returns a network-facing IP number for this system.
-
-    Returns:
-        ip_address (str)
-    """
-    socket_obj = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
-    socket_obj.connect(("google.com", 80))
-    ip_address = socket_obj.getsockname()[0]
-    socket_obj.close()
-    return ip_address
-
-def display_qrcode(QR, option, data):
-    """
-    Description: display qrcode either in terminal or new window
-    
-    Args:
-        option (bool): in line (False) vs new/split tab (True) QR code
-        data (str): URL of the HTTP server
-    """
-    QR.add_data(data)
-    if option == True:
-        im = QR.make_image()
-        im.show()
-    else:
-        QR.print_ascii(invert=1)    
-        
-def check_filename(name):
-    """
-    Description: Check that args.file is a string and assign it to FILENAME
-
-    Args:
-        name (str): filename from args.file 
-
-    Raises:
-        SystemExit: if type of args.file is not string
-
-    Returns:
-        FILENAME_INNER (str): filename
-    """
-    FILENAME_INNER, frameinfo = name, getframeinfo(currentframe())
-    if type(FILENAME_INNER) != str:
-        raise ShipError("filename argument can only be of type string not {}".format(type(FILENAME)),frameinfo.lineno)
-    else:
-        return FILENAME_INNER
-
-def mimetype_and_type(FILENAME):
-    """
-    Description: generate MIMETYPE AND TYPE from FILENAME
-
-    Args:
-        FILENAME (str): filename
-
-    Raises:
-        SystemExit: will be rasied if MIMETYPE cannot be found
-        SystemExit: will be rasied if any other error happens
-
-    Returns:
-        (MIMETYPE, TYPE) (tuple): a tuple containing MIMETYPE AND TYPE
-    """    
-    
-    try:
-        MIMETYPE = mimetypes.guess_type(FILENAME)
-        TYPE = MIMETYPE[0].split("/")[0]
-        return (MIMETYPE, TYPE)
-    except BaseException as e:
-        _, _, exc_tb = sys.exc_info()
-        rep = """please report file type on the github issues page:\nhttps://github.com/yusuf8ahmed/Ship/issues """
-        if MIMETYPE == (None, None):
-            raise ShipError("file type is not supported ({}, {})\n{}".format(FILENAME, MIMETYPE, rep), exc_tb.tb_lineno)
-        else:
-            raise ShipError("{} ({}, {})\n{}".format(e, FILENAME, MIMETYPE, rep), exc_tb.tb_lineno)
-       
-def read_file(FILENAME):
-    """
-    Description: reading in file (to be shared) in read-binary mode
-
-    Args:
-        FILENAME (str): filename
-
-    Raises:
-        SystemExit: will be rasied if a any error happen
-        # most probably will be reading file errors 
-
-    Returns:
-        FILE (bytes): a bytes string of the whole file
-    """
-    try:
-        with open(FILENAME, "rb") as f: 
-            return f.read()
-    except BaseException as e:
-        _, _, exc_tb = sys.exc_info()
-        raise ShipError("{} : ({})".format(e, FILENAME), "{} : function read_file".format(exc_tb.tb_lineno))
-    
-def read_file_ico(ICO_FILENAME):
-    """
-    Description: reading in file (.ico) in read-binary mode
-
-    Args:
-        ICO_FILENAME (str): .ico filename
-
-    Raises:
-        SystemExit: will be rasied if any error happen
-        # most probably will be reading file errors 
-
-    Returns:
-        ICO (bytes): a bytes string of the whole file
-    """
-    try:
-        with open(ICO_FILENAME, "rb") as f:
-            return f.read()
-    except BaseException as e:
-        _, _, exc_tb = sys.exc_info()
-        raise ShipError("{} : ({})".format(e, ICO_FILENAME), "{} : function read_file_ico".format(exc_tb.tb_lineno))
-
-def HTTP_handler(*args):
-    """
-    Description: create HTTP handler with *args given by http.server.HTTPServer
-    """
-    try:
-        HTTP_File_Server(FILENAME, FILE, ICO, JS_FILENAME, HOST, PORT, MIMETYPE, *args)
-    except BaseException as e:
-        r, t, exc_tb = sys.exc_info()
-        raise ShipError("{}{}{}".format(r,t,e), "{} : function HTTP_handler".format(exc_tb.tb_lineno))
-
-def create_server(HOST, PORT, HTTP_handler):
-    """creates http server
-
-    Args:
-        HOST (str): ip address of host computer
-        PORT (int): the sharing port of host computer 
-        HTTP_handler (function): this function is used to create a HTTP_File_Server 
-        instance with the with *args given by http.server.HTTPServer 
-
-    Raises:
-        SystemExit: will be rasied if any error happen
-    """
-    try:
-        return HTTPServer((HOST, PORT), HTTP_handler)
-    except OSError as e:
-        _, _, exc_tb = sys.exc_info()
-        raise ShipError("{}".format(e), exc_tb.tb_lineno)
+    raise SystemExit("Ship: Python must be greater that version 3")   
 
 #COMMAND LINE ARGUMENTS
-qr_help = "if your phone is having trouble reading QRcode use flag -q:{} ship -q [FILENAME]{}".format(Colors.Green,Colors.Reset)
+qr_help = "if your phone is having trouble reading qrcode use flag -q:{} ship -q [FILENAME]{}".format(Colors.Green,Colors.Reset)
 parser = argparse.ArgumentParser(
     description="""Send file to phone or other computers. Make sure to kill this process after completetion\n{}""".format(qr_help)
-    , formatter_class=argparse.RawTextHelpFormatter)
+    ,formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('file', type=str, nargs='?', help='file to be shared')
-parser.add_argument('-p','--port', type=int, default=9999, metavar='port', nargs='?', help='port to be shared one')
+parser.add_argument('-p','--port', type=int, default=9999, metavar='port', nargs='?', help='port to be shared on')
+parser.add_argument('-l','--local', action='store_true', help='if flagged host address will be localhost/127.0.0.1')
 parser.add_argument('-q','--qrcode', action='store_true', help='if flagged qrcode will be in new tab')
-parser.add_argument('-V', '--version', action='version', version="Ship {}".format(__version__))
+#parser.add_argument('-o','--open', action='store_true', help='if flagged browser will open automatically')
+parser.add_argument('-v', '--version', action='version', version="Ship {}".format(__version__))
 args = parser.parse_args()
 
 #? CONST
 # Files 
 ICO_FILENAME = os.path.join(os.path.dirname(__file__), "favicon.ico") 
 JS_FILENAME = os.path.join(os.path.dirname(__file__), "demo_defer.js")
-# QRcode
-QR = qrcode.QRCode()
+CSS_FILENAME = os.path.join(os.path.dirname(__file__), "main.css")
 # HTTP server config
-HOST = local_address()
+HOST = "127.0.0.1" if args.local == True else local_address()
 PORT = args.port
-# QR code
-QR_OPTION = args.qrcode
-# File Properties
+# File operations
 FILENAME = check_filename(args.file)
+ABS_FILEPATH = os.path.abspath(args.file)
 MIMETYPE, TYPE = mimetype_and_type(FILENAME)
 FILE = read_file(FILENAME)
+# Favicon operations
 ICO = read_file_ico(ICO_FILENAME)
+# command 
+COMMAND = command(args.file)
+# QR code and option
+QR = qrcode.QRCode()
+QR_OPTION = args.qrcode
+# # Webbrowser option
+# WB_OPTION = args.open
 
-def main():   
-    myServer = create_server(HOST, PORT, HTTP_handler)
-    print("Make sure to click 'ctrl-c' to kill after usage")
-    print("{} Sharing Server Starts {} - http://{}:{}".format(time.asctime(), TYPE, HOST, PORT))
-    display_qrcode(QR, QR_OPTION, "http://{}:{}".format(HOST, PORT))
+def HTTP_handler(*args):
+    """Description: create HTTP handler with *args given by http.server.HTTPServer
+    
+    Args(reliant on global scope):
+        FILENAME (str): name of file to be shared
+        FILE (bytes): the bytes of the file to be shared
+        ICO (bytes): the bytes of the favicon
+        JS_FILENAME (str): the full path of the js_filename 
+        HOST (str): the ip address of host computer
+        PORT (int): the sharing port of host computer
+        MIMETYPE (str):  the mimetype of the file to be shared  
+            
+    Args:
+        args (list): list of args given by HTTPSever in create_server function
+        
+    :reliant on global scope
+    """
     try:
-        myServer.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    myServer.server_close()
-    print("{} Sharing Server Stop - http://{}:{}".format(time.asctime(), HOST, PORT))
+        HTTP_File_Server(FILENAME, FILE, ICO, JS_FILENAME, HOST, PORT, MIMETYPE, CSS_FILENAME, __version__, *args)
+    except BaseException as e:
+        _, _, exc_tb = sys.exc_info()
+        raise ShipError("{}".format(e), "{} : function HTTP_handler".format(exc_tb.tb_lineno))
 
-if __name__ == "__main__":
+def main(): 
+    """Ship Executing as standalone script, running from terminal
+    
+    Args(defined in global scope):
+        QR (qrcode.main.QRCode): qrcode object to be used in main function
+        QR_OPTION (bool): how to show qr code in line(:False) or new tab(:True) [from argparse]
+        HOST (str): host to be runned on [from argparse] 
+        PORT (int): port to be runned on [from argparse]
+        HTTP_handler (function): a function that return a instance of my Handler class 
+        
+    :reliant on global scope
+    """
+    
+    qr, qr_option, host, port = QR, QR_OPTION, HOST, PORT
+    myServer, port_assigned = create_server(host, port, HTTP_handler)
+    url = "http://{}:{}".format(host, port_assigned) 
+    print("Make sure to click 'ctrl-c' to kill after usage")
+    print("{} Sharing Server Starts - {}".format(time.asctime(), url))
+    display_qrcode(qr, qr_option, url)
+
+    try:
+        myServer.serve_forever() 
+    except KeyboardInterrupt as e: 
+        pass
+    print("{} Sharing Server Stop - {}".format(time.asctime(), url))
+    myServer.server_close() 
+        
+if "__main__" in __name__ :
     main()
