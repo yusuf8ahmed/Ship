@@ -1,14 +1,5 @@
 # Standard package
 from http.server import BaseHTTPRequestHandler, HTTPServer # Basic http server
-<<<<<<< HEAD
-from http import HTTPStatus
-# HTML templates
-from templates import BASE_TEMPLATE, TEMPLATE_ERROR, UNVIEWABLE_TEMPLATE
-from templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
-from templates import TEMPLATE_PDF
-
-from ShipError import ShipError
-=======
 
 # local imports: HTML templates
 if str(__package__) == "ship":
@@ -22,7 +13,6 @@ else:
     from templates import BASE_TEMPLATE, TEMPLATE_ERROR, FULL_TEMPLATE
     from templates import TEMPLATE_AUDIO, TEMPLATE_IMAGE, TEMPLATE_TEXT, TEMPLATE_VIDEO
     from templates import TEMPLATE_PDF
->>>>>>> design_upgrade
 
 TYPES = {
     "audio":TEMPLATE_AUDIO ,
@@ -76,22 +66,10 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
                 settings.update({"HOST": self.HOST, "PORT": self.PORT, "VERSION": self.VERSION})
                 html = TYPES_SPECIAL.get(settings['MIMETYPE']).format(**settings)
             except BaseException as e:
-<<<<<<< HEAD
-                r = UNVIEWABLE_TEMPLATE.format(**settings)
-        return r
-    
-    def _set_response(self, statuscode, contenttype, contentlength):
-        self.send_response(statuscode, HTTPStatus(statuscode).name)
-        self.send_header("Content-Type", contenttype)
-        self.send_header('Content-Length', contentlength)
-        self.end_headers()
-
-=======
                 # file cannot be opened open a pr
                 html = FULL_TEMPLATE.format(**settings)
         return html
         
->>>>>>> design_upgrade
     def do_GET(self):             
         if self.path == "/{}".format(self.FILENAME):
             self.log_message("Loading {}, {}".format(self.FILENAME, self.MIMETYPE[0]))
@@ -114,12 +92,6 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             self.wfile.write(self.ICO)
 
         elif self.path == "/demo_defer.js":
-<<<<<<< HEAD
-            self.log_message("Loading in pdf viewer")
-            with open(self.JS_FILENAME, "rb") as f:
-                JS = f.read()
-            self._set_response(200, "text/javascript", len(JS))
-=======
             self.log_message("Loading pdfjs")
             with open(self.JS_FILENAME, "rb") as f:
                 JS = f.read()
@@ -127,7 +99,6 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/javascript")
             self.send_header('Content-Length', len(JS))
             self.end_headers()
->>>>>>> design_upgrade
             self.wfile.write(JS)
 
         elif self.path == "/":
@@ -160,6 +131,5 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             
     def do_POST(self):
         self.log_message("Ship: POST request are not allowed ({})".format(self.path).encode('utf-8'))
-        ShipError("POST request are not allowed {}".format(self.path), ": HTTPFileserver.do_POST")
 
         

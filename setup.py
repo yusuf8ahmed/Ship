@@ -16,15 +16,15 @@ with open('requirements.txt') as f:
 # source env/bin/activate
 
 #? test.pypi
-#- rm -rf build dist shipapp.egg-info
-#- python setup.py sdist bdist_wheel 
-#- python3 -m twine upload --skip-existing --repository testpypi dist/*
+# rm -rf build dist shipapp.egg-info
+# python setup.py sdist bdist_wheel 
+# python3 -m twine upload --skip-existing --repository testpypi dist/*
 
 # pip install --index-url https://test.pypi.org/simple/ --upgrade --no-cache-dir --extra-index-url=https://pypi.org/simple/ shipapp
 
 #? pypi
-#- rm -rf build dist shipapp.egg-info
-#- python setup.py sdist bdist_wheel 
+# rm -rf build dist shipapp.egg-info
+# python setup.py sdist bdist_wheel 
 # python -m twine upload --skip-existing dist/*
 # python -m twine upload dist/*
 
@@ -41,7 +41,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="shipapp",
-    version="0.0.3.5",
+    version="0.0.3.7",
     author="Yusuf Ahmed",
     author_email="yusufahmed172@gmail.com",
     packages=find_packages(exclude=['test_files']),
@@ -49,7 +49,7 @@ setup(
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
     url="https://github.com/yusuf8ahmed/Ship",
-    install_requires=['qrcode==6.1','pillow', 'psutil'],
+    install_requires=['qrcode==6.1','pillow'],
     package_data={
         'ship': ['*.ico', "*.js", "*.css"],
     },
