@@ -69,6 +69,12 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
                 # file cannot be opened open a pr
                 html = FULL_TEMPLATE.format(**settings)
         return html
+    
+    def _set_response(self, code, type, length):
+        self.send_response(code)
+        self.send_header('Content-type', type)
+        self.send_header('Content-Length', length)
+        self.end_headers()
         
     def do_GET(self):             
         if self.path == "/{}".format(self.FILENAME):
@@ -80,10 +86,7 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             self.log_message("Loading main.css")
             with open(self.CSS_FILENAME, "rb") as f:
                 CSS = f.read()
-            self.send_response(200, "OK")
-            self.send_header("Content-Type", "text/css")
-            self.send_header('Content-Length', len(CSS))
-            self.end_headers()
+            self._set_response(200, "text/css", len(CSS))
             self.wfile.write(CSS)
 
         elif self.path == "/favicon.ico":
@@ -95,10 +98,7 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             self.log_message("Loading pdfjs")
             with open(self.JS_FILENAME, "rb") as f:
                 JS = f.read()
-            self.send_response(200, "OK")
-            self.send_header("Content-Type", "text/javascript")
-            self.send_header('Content-Length', len(JS))
-            self.end_headers()
+            self._set_response(200, "text/javascript", len(JS))
             self.wfile.write(JS)
 
         elif self.path == "/":
@@ -123,6 +123,7 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
                 {
                     "HOST":self.HOST,
                     "PORT":self.PORT,
+                    "VERSION": self.VERSION,
                     "MESSAGE":"This is an illegal route"
                 }
                 )
