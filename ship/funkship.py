@@ -8,6 +8,7 @@ if sys.version_info >= (3, 0):
     
     # Standard package
     import os
+    import re
     import socket  # get local ip address
     import platform  # find platform 
     import logging  # do logs
@@ -22,10 +23,12 @@ if sys.version_info >= (3, 0):
         # very bad solution
         from .shiperror import ShipError, ShipPrint  # Ship Template Error and Print Class
         from .colors import Colors  # Color for terminal
+        #from .__main__ import veblog
     else:
         # absolute import only when running locally 
         from shiperror import ShipError, ShipPrint  # Ship Template Error and Print Class
         from colors import Colors 
+        #from __main__ import veblog
 else:
     raise SystemExit("Ship: Python must be greater that version 3")
 
@@ -96,7 +99,7 @@ def display_qrcode(qr, option, data):
     else:
         qr.print_ascii(invert=1) 
         
-def check_filename(name):
+def check_filename(name, log):
     """
     Description: Check that args.file is a string and assign it to FILENAME
 
@@ -109,32 +112,43 @@ def check_filename(name):
     Returns:
         filename_inner (str): filename
     """
-    filename_inner, frameinfo = name, getframeinfo(currentframe())
-    if type(filename_inner) != str:
-        raise ShipError("filename argument can only be of type string not {}".format(type(filename_inner)), frameinfo.lineno)
+    log("checking arg.file".format(), level="debug")
+    if os.path.exists(name):
+        try:   
+            filename_inner, frameinfo = name, getframeinfo(currentframe())
+            if type(filename_inner) != str:
+                raise ShipError("filename argument can only be of type string not {}".format(type(filename_inner)), frameinfo.lineno)
+            else:
+                return filename_inner
+        except BaseException as e:
+            _, _, exc_tb = sys.exc_info()
+            raise ShipError("function :{}".format(__name__,e), exc_tb.tb_lineno)
     else:
-        return filename_inner
+        raise ShipError("file {} doesn't exist".format(name), "")
     
-def mimetype_and_type(filename):
+def mimetype_and_type(filename, log):
     """
     Description: generate MIMETYPE AND TYPE from FILENAME
 
     Args:
         FILENAME (str): filename
+        log (func): 
 
     Raises:
-        SystemExit: will be raised if MIMETYPE cannot be found
-        SystemExit: will be raised if any other error happens
+        ShipError (1): will be raised if any other error happens
+        ShipError (2): will be raised if MIMETYPE cannot be found
 
     Returns:
         (mimetype_inner, type) (tuple): a tuple containing MIMETYPE AND TYPE
     """
-    
+    log("checking and getting mimetype of file {}".format(filename), level="debug")
     try:
         mimetype_inner = mimetypes.guess_type(filename)
         type = mimetype_inner[0].split("/")[0]
+        log("mimetype of file {} is {}".format(filename, mimetype_inner), level="debug")
         return (mimetype_inner, type)
     except BaseException as e:
+        log("Error occured in {}".format(__name__), level="error")
         _, _, exc_tb = sys.exc_info()
         rep = """please report file type on the github issues page:\nhttps://github.com/yusuf8ahmed/Ship/issues """
         if mimetype_inner == (None, None):
@@ -142,7 +156,7 @@ def mimetype_and_type(filename):
         else:
             raise ShipError("{} ({}, {})\n{}".format(e, filename, mimetype_inner, rep), exc_tb.tb_lineno)
         
-def read_file(filename):
+def read_file(filename, log):
     """
     Description: reading in file (to be shared) in read-binary mode
 
@@ -156,10 +170,12 @@ def read_file(filename):
     Returns:
         FILE (bytes): a bytes string of the whole file
     """
+    log("reading {}".format(filename), level="debug")
     try:
         with open(filename, "rb") as f: 
             return f.read()
     except BaseException as e:
+        log("Error occured in {}".format(__name__), level="error")
         _, _, exc_tb = sys.exc_info()
         raise ShipError("{} : ({})".format(e, filename), "{} : function read_file".format(exc_tb.tb_lineno))
     
@@ -183,9 +199,27 @@ def read_file_ico(ico_filename):
     except BaseException as e:
         _, _, exc_tb = sys.exc_info()
         raise ShipError("{} : ({})".format(e, ico_filename), "{} : function read_file_ico".format(exc_tb.tb_lineno))
+ 
+ 
+def check_link(link, log):
+    regex = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+        r'localhost|' #localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?' # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    if re.match(regex, link):
+        log("Link is valid {}".format(link), level="debug")
+        return link
+    else:
+        log("Link is invalid {}".format(link), level="error")
+        raise ShipError("{}".format(), ":function check_link")
+        
     
-def create_server(host, port, HTTP_handler, forceport=False):
-    """creates http server
+def create_server(host, port, HTTP_handler, forceport=False) -> tuple:
+    """
+    Description: creates http server
 
     Args:
         HOST (str): the ip address of host computer

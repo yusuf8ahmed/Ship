@@ -1,4 +1,8 @@
 /* Style the header with a grey background and some padding */
+* {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
 .header {
     font-family: Arial;
     overflow: hidden;

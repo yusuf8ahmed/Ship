@@ -68,10 +68,14 @@ Ship will watch a file and will restart server with new file content<br>
 Ship can now be called from within Python as Shipapp.ShipIt<br>
 
 ## alpha release v0.0.3.0
-new -l, --local cli flag: force port to localhost/127.0.0.1<br>
-Whole codebase revamp/rewrite with better errors and comments<br>
 Whole design with use of external css<br>
 Now you can run multiple instance on Ship<br>
+Ship can now share links on top of files<br>
+Whole codebase revamp/rewrite with better errors and comments<br>
+new -l, --link cli flag: ship will start the Link Sharing Server<br>
+new -P, --private cli flag: if flagged host address will be on private ip<br>
+new -L, --local cli flag: force port to localhost/127.0.0.1<br>
+new -V, --verbose cli flag: additional details will be shown via stdout<br>
 
 ## alpha release v0.0.2.1
 <br>

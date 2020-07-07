@@ -1,3 +1,4 @@
+from platform import processor
 import re
 import os
 import sys
@@ -87,4 +88,25 @@ import time
 # except KeyboardInterrupt:
 #     server.shutdown()
 #     sys.exit(0)
+    
+# import re 
+# regex = re.compile(
+#         r'^(?:http|ftp)s?://' # http:// or https://
+#         r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+#         r'localhost|' #localhost...
+#         r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+#         r'(?::\d+)?' # optional port
+#         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+# if re.match(regex, "http://www.example.com"):
+#     print("success")
+# else:
+#     print("unsuccessfull")
+
+from pyngrok import ngrok
+
+# Open a HTTP tunnel on the default port 80
+public_url = ngrok.connect(name="ship")
+print(public_url)
+# Open a SSH tunnel
     

@@ -33,11 +33,15 @@ with open('requirements.txt') as f:
 # git status
 # git add .
 # git init && git status && git add .
-# git commit -m "alpha release v0.0.2.x"
+# git commit -m "alpha release v0.0.3.x"
 # git push origin master
 
-# git tag -a v0.0.2.x -m "alpha release v0.0.2.x"
-# git push origin v0.0.2.x
+# git tag -a v0.0.3.x -m "alpha release v0.0.3.x"
+# git push origin v0.0.3.x
+
+#? delete tag remote and local
+# git push --delete origin v0.0.3.x
+#  git tag --delete v0.0.3.x
 
 setup(
     name="shipapp",
@@ -49,7 +53,7 @@ setup(
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
     url="https://github.com/yusuf8ahmed/Ship",
-    install_requires=['qrcode==6.1','pillow'],
+    install_requires=['qrcode==6.1','pillow', 'pyngrok'],
     package_data={
         'ship': ['*.ico', "*.js", "*.css"],
     },
@@ -63,8 +67,11 @@ setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Intended Audience :: End Users/Desktop",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     ],
-    keywords ='ship shipapp file transfer shiplite',
+    keywords ='ship shipapp filetransfer shiplite shipu',
     python_requires='>=3',
     zip_safe = False
 )
