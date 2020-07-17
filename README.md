@@ -55,6 +55,7 @@ optional arguments:
   -p [port], --port [port]
                         port to be shared on
   -q, --qrcode          if flagged qrcode will be in new tab
+  -o, --open            if flagged browser will open automatically
   -P, --private         if flagged host address will be on private ip
   -L, --localhost       if flagged host address will be localhost
   -l, --link            if flagged ship will start the Link Sharing Server
@@ -65,16 +66,16 @@ optional arguments:
 # Releases 🏭
 
 ## alpha release v0.0.4.0 (In development/unstable)
-new -o, --open cli flag auto open browsers on host computer <br>
-Now Ship can fallback on an Empty port if port 9999 is being used <br>
 Ship will watch a file and will restart server with new file content<br>
 Ship can now be called from within Python as Shipapp.ShipIt<br>
 
 ## alpha release v0.0.3.0
+Now Ship can fallback on an Empty port if port 9999 is being used <br>
 Whole codebase revamp/rewrite with better errors and comments<br>
 Now you can run multiple instance on Ship<br>
 Whole design with use of external css<br>
 Ship can now share links on top of files<br>
+new -o, --open cli flag auto open browsers on host computer <br>
 new -P, --private cli flag: if flagged host address will be on private ip<br>
 new -L, --local cli flag: force port to localhost/127.0.0.1<br>
 new -V, --verbose cli flag: additional details will be shown via stdout<br>

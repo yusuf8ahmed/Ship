@@ -144,7 +144,8 @@ TEMPLATE_PDF = """
                 &nbsp; &nbsp;
                 <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
             </div>
-            <canvas id="the-canvas" style="border: 1px solid black; direction: ltr;"></canvas>
+            <canvas id="the-canvas" style="border: 1px solid black; direction: ltr; width:100%; height:100%;" height="673" width="476">
+            </canvas>
             <p>Filepath: {FILENAME}</p>
             <button id="shipbutton">
                 <a href="{FILENAME}" style="text-decoration: none; color: white;" download>
@@ -158,7 +159,7 @@ TEMPLATE_PDF = """
         Ship: {VERSION}
     </div>
     <script>
-        var url = 'http://{HOST}:{PORT}/{FILENAME}';
+        var url = window.location.href+'{FILENAME}';
     </script>
     <script src="demo_defer.js" defer></script>
 </body>

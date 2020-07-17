@@ -11,7 +11,6 @@ if sys.version_info >= (3, 0):
     import re
     import socket  # get local ip address
     import platform  # find platform 
-    import logging  # do logs
     import mimetypes  # to find mimetype of specific files
     from http.server import HTTPServer  # Basic http server
     from inspect import currentframe, getframeinfo  # Get line number
@@ -112,7 +111,7 @@ def check_filename(name, log):
     Returns:
         filename_inner (str): filename
     """
-    log("checking arg.file".format(), level="debug")
+    log("checking arg.file".format())
     if os.path.exists(name):
         try:   
             filename_inner, frameinfo = name, getframeinfo(currentframe())
@@ -141,11 +140,11 @@ def mimetype_and_type(filename, log):
     Returns:
         (mimetype_inner, type) (tuple): a tuple containing MIMETYPE AND TYPE
     """
-    log("checking and getting mimetype of file {}".format(filename), level="debug")
+    log("checking and getting mimetype of file {}".format(filename))
     try:
         mimetype_inner = mimetypes.guess_type(filename)
         type = mimetype_inner[0].split("/")[0]
-        log("mimetype of file {} is {}".format(filename, mimetype_inner), level="debug")
+        log("mimetype of file {} is {}".format(filename, mimetype_inner))
         return (mimetype_inner, type)
     except BaseException as e:
         log("Error occured in {}".format(__name__), level="error")
@@ -170,7 +169,7 @@ def read_file(filename, log):
     Returns:
         FILE (bytes): a bytes string of the whole file
     """
-    log("reading {}".format(filename), level="debug")
+    log("reading {}".format(filename))
     try:
         with open(filename, "rb") as f: 
             return f.read()
@@ -210,11 +209,11 @@ def check_link(link, log):
         r'(?::\d+)?' # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     if re.match(regex, link):
-        log("Link is valid {}".format(link), level="debug")
+        log("Link is valid {}".format(link))
         return link
     else:
         log("Link is invalid {}".format(link), level="error")
-        raise ShipError("{}".format(), ":function check_link")
+        raise ShipError("Link is invalid {}".format(link), ":function check_link")
         
     
 def create_server(host, port, HTTP_handler, forceport=False) -> tuple:

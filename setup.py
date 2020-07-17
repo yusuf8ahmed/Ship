@@ -53,7 +53,7 @@ setup(
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
     url="https://github.com/yusuf8ahmed/Ship",
-    install_requires=['qrcode==6.1','pillow', 'pyngrok'],
+    install_requires=['qrcode==6.1','pillow', 'pyngrok', 'loguru'],
     package_data={
         'ship': ['*.ico', "*.js", "*.css"],
     },
