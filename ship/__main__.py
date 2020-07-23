@@ -80,7 +80,6 @@ else:
     class logger:
         def debug(*args, **kwargs):
             pass
-    
 # QR code and option
 QR = qrcode.QRCode()
 QR_OPTION = args.qrcode

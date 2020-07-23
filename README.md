@@ -9,7 +9,17 @@ Ship is Developed on macOS Catalina and should work on all platforms that python
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/powered-by-electricity.svg)](https://forthebadge.com)
 
-# All platforms 📺
+## Table of Contents
+  * [Requirements 📺](#requirements-📺)
+  * [Installation ⬆️](#installation-⬆️)
+  * [uninstallation ⬇️](#uninstallation-⬇️)
+  * [Usage 💯](#usage-💯)
+  * [Releases 🏭](#releases-🏭)
+  * [Common issues when Installing 🪑](#common-issues-when-installing-🪑)
+  * [Platforms Tested on 🧪](#platforms-tested-on-🧪)
+  * [Issues 🤫](#issues-🤫)
+
+# Requirements 📺
 * pip is required to download ship
 * to download pip on windows users use click [Python 3.7.7](https://www.python.org/ftp/python/3.7.7/python-3.7.7-amd64-webinstall.exe)
 * to download pip on darwin macOS(for OS X 10.9 and later) click [Python 3.7.7](https://www.python.org/ftp/python/3.7.7/python-3.7.7-macosx10.9.pkg)
@@ -20,7 +30,7 @@ Ship is Developed on macOS Catalina and should work on all platforms that python
 pip install shipapp
 ```
 
-## uninstallation ⬇️
+## Uninstallation ⬇️
 ```bash
 pip uninstall shipapp
 ```
@@ -85,10 +95,8 @@ new -L, --local cli flag: force port to localhost/127.0.0.1<br>
 new -V, --verbose cli flag: additional details will be shown via stdout<br>
 new -l, --link cli flag: ship will start the Link Sharing Server<br>
 
-## alpha release v0.0.2.1
-<br>
-
-## alpha release v0.0.2.0
+### **alpha release v0.0.2.1**
+### **alpha release v0.0.2.0**
 full release on pypi <br>
 support for inline and new tab qrcodes <br>
 new -q, --qrcode cli flag: to display flag <br>
@@ -96,27 +104,51 @@ new -V, -version cli flag: to show version <br>
 more readable errors <br>
 git clone installation is not long available <br>
 
-## alpha release v0.0.1.6
+### **alpha release v0.0.1.6**
 help file update <br>
 
-## alpha release v0.0.1.5
+### **alpha release v0.0.1.5**
 build dist errors <br>
 
-## alpha release v0.0.1.4
+### **alpha release v0.0.1.4**
 float right on all templates <br>
 
-## alpha release v0.0.1.3
+### **alpha release v0.0.1.3**
 build dist errors <br>
 
-## alpha release v0.0.1.2
+### **alpha release v0.0.1.2**
 template decision error fixed <br>
 text template fixed <br>
 error raising error fixed <br>
 
-## alpha release v0.0.1.1
+### **alpha release v0.0.1.1**
 initial release
 
-# Issues
+# Common issues when Installing 🪑
+
+## Ubuntu PATH issue when downloading 
+When installing ship (shipapp) python might say that script is not placed in
+The PATH to solve this problem follow the steps
+
+1. enter bashrc config file with vim 
+```bash
+vi .bashrc
+```
+2. enter insert mode in vim <kbd>Esc</kbd> then press <kbd>i</kbd> for insert
+3. then at the top write with the path the python outputted
+```bash
+export PATH='(the path that python outputted):$PATH'
+```
+4. then exit vim by pressing <kbd>Esc</kbd> then typing <kbd>:</kbd><kbd>w</kbd> <kbd>q</kbd>
+5. then exit the terminal and enter again then ship command should now be available 😀
+
+# Platforms Tested on 🧪
+
+### MacOS Catalina - 10.15.6
+### Windows 10 - 2004 (Pending)
+### Canonical Ubuntu - 20.04 😀😀
+
+# Issues 🤫
 ## Templating
 Since the template are loaded in with python format method anything the uses curly braces will cause an error which include: any Javascript function, if statements, try - except blocks and embedded css.
 

@@ -45,7 +45,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="shipapp",
-    version="0.0.3.7",
+    version="0.0.3.0",
     author="Yusuf Ahmed",
     author_email="yusufahmed172@gmail.com",
     packages=find_packages(exclude=['test_files']),
