@@ -99,6 +99,11 @@ elif args.private == True:
     HOST = local_address() # private ip
 # File operations
 MAIN = args.main
+logger.debug(f"main: {MAIN}")
+if MAIN is None:
+    logger.debug(f"main cannot be NoneType :{MAIN}")
+    ShipExit("main argument cannot be empty")
+    
 # Favicon operations
 ICO = read_file_ico(ICO_FILENAME)
 if LINK_OPTION:

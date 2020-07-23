@@ -1,4 +1,3 @@
-
 from pip._internal.req import parse_requirements
 from operator import attrgetter
 from os import path
