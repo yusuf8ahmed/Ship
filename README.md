@@ -144,9 +144,9 @@ export PATH='(the path that python outputted):$PATH'
 
 # Platforms Tested on 🧪
 
-### MacOS Catalina - 10.15.6
-### Windows 10 - 2004 (Pending)
-### Canonical Ubuntu - 20.04 😀😀
+### MacOS Catalina - version 10.15.6 😀😀
+### Windows 10 - version 2004 😀😀
+### Canonical Ubuntu - version 20.04 😀😀
 
 # Issues 🤫
 ## Templating
