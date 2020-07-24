@@ -117,7 +117,6 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
                 )
             self._set_response(200, "text/html", len(res.encode('utf-8')))
             self.wfile.write(res.encode())
-
         else:
             self.log_message("Loading in error")
             res = self.get_response(

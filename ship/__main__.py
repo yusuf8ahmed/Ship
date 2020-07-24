@@ -6,11 +6,6 @@ and __main__.py is usually entry when calling from python
 """
 
 import sys
-import multiprocessing as mp 
-import traceback
-import signal
-import threading
-
 __version__ = "0.0.3.0"
 if sys.version_info >= (3, 0):
     # Third party package
@@ -20,10 +15,15 @@ if sys.version_info >= (3, 0):
     from loguru import logger # bruh logging
 
     # Standard package
+    import traceback
+    import signal # clean exit
+    import threading # Push HTTP server to Thread-2
     import os  # os.path operations
     import time  # Logging
     import argparse  # cli
     import webbrowser # open webbrowser
+    # replacement for os.path see issues #3 and #5
+    from pathlib import Path
     
     #local imports
     if str(__package__) == "ship":
@@ -35,7 +35,7 @@ if sys.version_info >= (3, 0):
         from .shiperror import ShipError, ShipPrint, ShipExit  # Ship Template Error and Print Class
         from .funkship import local_address, random_port, display_qrcode
         from .funkship import check_filename, mimetype_and_type, read_file
-        from .funkship import read_file_ico, create_server,check_link
+        from .funkship import read_file_ico, create_server, check_link
         from .funkship import command
     else:
         # absolute import only when running locally 
@@ -117,9 +117,6 @@ else:
     MIMETYPE, TYPE = mimetype_and_type(FILENAME, logger.debug)
     FILE = read_file(FILENAME, logger.debug)
    
-logger.debug("argparse line: {}".format(args)) 
-
-
 def HTTP_handler(*args):
     """Description: create HTTP handler with *args given by http.server.HTTPServer
     :RELIANT ON GLOBAL SCOPE
@@ -203,6 +200,7 @@ def main():
             break
 
 if "__main__" in __name__ :
+    logger.debug("argparse line: {}".format(args)) 
     logger.debug("__file__={}|__name__={}|__package__={}".format(__file__ ,__name__,__package__)) 
     logger.debug("Command line: {}".format(COMMAND)) 
     logger.debug("{}".format(MAIN)) 
