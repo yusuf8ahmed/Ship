@@ -19,7 +19,6 @@ Ship is Developed on macOS Catalina and should work on all platforms that python
   * [Releases 🏭](#releases-🏭)
   * [Common issues when Installing 🪑](#common-issues-when-installing-🪑)
   * [Platforms Tested on 🧪](#platforms-tested-on-🧪)
-  * [Issues 🤫](#issues-🤫)
 
 # Requirements 📺
 * pip is required to download ship
