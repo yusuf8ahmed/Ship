@@ -2,7 +2,9 @@
 
 Ship is a command line application that makes transferring files from a computer to a phone or another computer easy <br>
 Ship is Developed on macOS Catalina and should work on all platforms that python3 supports
-
+<br>
+[![Downloads](https://pepy.tech/badge/shipapp)](https://pepy.tech/project/shipapp)
+<br>
 <a href="https://www.producthunt.com/posts/ship-9?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-ship-9" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=206345&theme=light" alt="Ship - The best way to move files between your devices | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
 <br>
 [![forthebadge](https://forthebadge.com/images/badges/uses-badges.svg)](https://forthebadge.com)
@@ -17,7 +19,6 @@ Ship is Developed on macOS Catalina and should work on all platforms that python
   * [Releases 🏭](#releases-🏭)
   * [Common issues when Installing 🪑](#common-issues-when-installing-🪑)
   * [Platforms Tested on 🧪](#platforms-tested-on-🧪)
-  * [Issues 🤫](#issues-🤫)
 
 # Requirements 📺
 * pip is required to download ship
