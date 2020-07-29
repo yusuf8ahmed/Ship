@@ -1,5 +1,7 @@
 # Standard package
 from http.server import BaseHTTPRequestHandler, HTTPServer # Basic http server
+from pathlib import Path, PurePath
+import os
 
 # local imports: HTML templates
 if str(__package__) == "ship":
@@ -30,8 +32,9 @@ TYPES_SPECIAL = {
 
 class HTTP_File_Server(BaseHTTPRequestHandler):
     
-    def __init__(self, filename, file, ico, js_filename, host, port, mimetype, css_filename, version, *args):
+    def __init__(self, filename, resurl, file, ico, js_filename, host, port, mimetype, css_filename, version, log, *args):
         self.FILENAME = filename
+        self.RESURL = resurl
         self.FILE = file
         self.ICO = ico
         self.JS_FILENAME = js_filename
@@ -40,6 +43,7 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
         self.MIMETYPE = mimetype
         self.CSS_FILENAME = css_filename
         self.VERSION = version
+        self.log = log
         BaseHTTPRequestHandler.__init__(self, *args)
         
     def get_response(self, name, settings):
@@ -77,48 +81,67 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
         self.send_header('Content-type', type)
         self.send_header('Content-Length', length)
         self.end_headers()
+
+    def class_log(self, mess):
+        self.log(mess)
+        self.log_message(mess)
         
     def do_GET(self):             
-        if self.path == "/{}".format(self.FILENAME):
-            self.log_message("Loading {}, {}".format(self.FILENAME, self.MIMETYPE[0]))
-            self._set_response(200, self.MIMETYPE[0], len(self.FILE))
-            self.wfile.write(self.FILE)
+        if self.path == "{}".format(self.RESURL):
+            try:
+                self.class_log("Loading {}, {}".format(self.FILENAME, self.MIMETYPE[0]))
+                self._set_response(200, self.MIMETYPE[0], len(self.FILE))
+                self.wfile.write(self.FILE)
+            except BaseException as e:
+                self.class_log(f"Loading File url error: {e}")
 
         elif self.path == "/main.css":
-            self.log_message("Loading main.css")
-            with open(self.CSS_FILENAME, "rb") as f:
-                CSS = f.read()
-            self._set_response(200, "text/css", len(CSS))
-            self.wfile.write(CSS)
+            try:
+                self.class_log("Loading main.css")
+                with open(self.CSS_FILENAME, "rb") as f:
+                    CSS = f.read()
+                self._set_response(200, "text/css", len(CSS))
+                self.wfile.write(CSS)
+            except BaseException as e:
+                self.class_log(f"Loading main.css error: {e}")
 
         elif self.path == "/favicon.ico":
-            self.log_message("Loading favicon")
-            self._set_response(200, "image/x-icon", len(self.ICO))
-            self.wfile.write(self.ICO)
+            try:
+                self.class_log("Loading favicon")
+                self._set_response(200, "image/x-icon", len(self.ICO))
+                self.wfile.write(self.ICO)
+            except BaseException as e:
+                self.class_log(f"Loading favicon error: {e}")
 
         elif self.path == "/demo_defer.js":
-            self.log_message("Loading pdfjs")
-            with open(self.JS_FILENAME, "rb") as f:
-                JS = f.read()
-            self._set_response(200, "text/javascript", len(JS))
-            self.wfile.write(JS)
+            try:
+                self.class_log("Loading pdfjs")
+                with open(self.JS_FILENAME, "rb") as f:
+                    JS = f.read()
+                self._set_response(200, "text/javascript", len(JS))
+                self.wfile.write(JS)
+            except BaseException as e:
+                self.class_log(f"Loading pdfjs error: {e}")
 
         elif self.path == "/":
-            self.log_message("Loading in main")
-            res = self.get_response(
-                self.MIMETYPE[0].split("/")[0],
-                {
-                    "FILENAME":self.FILENAME,
-                    "MIMETYPE":self.MIMETYPE[0],
-                    "HOST":self.HOST,
-                    "PORT":self.PORT,
-                    "VERSION": self.VERSION
-                }
-                )
-            self._set_response(200, "text/html", len(res.encode('utf-8')))
-            self.wfile.write(res.encode())
+            try:
+                self.class_log("Loading index:>{}".format(self.FILENAME))
+                res = self.get_response(
+                    self.MIMETYPE[0].split("/")[0],
+                    {
+                        "FILENAME":self.FILENAME,
+                        "MIMETYPE":self.MIMETYPE[0],
+                        "HOST":self.HOST,
+                        "PORT":self.PORT,
+                        "VERSION": self.VERSION
+                    }
+                    )
+                self._set_response(200, "text/html", len(res.encode('utf-8')))
+                self.wfile.write(res.encode())
+            except BaseException as e:
+                self.class_log(f"Loading index error: {e}")
         else:
-            self.log_message("Loading in error")
+            self.class_log("Loading in error")
             res = self.get_response(
                 "error",
                 {
@@ -132,8 +155,8 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             self.wfile.write(res.encode())
             
     def do_POST(self):
-        self.log_message("Ship: POST request are not allowed ({})".format(self.path).encode('utf-8'))
-        
+        self.class_log("Ship: POST request are not allowed ({})".format(self.path).encode('utf-8'))
+
 class HTTP_URL_Server(BaseHTTPRequestHandler):
     
     def __init__(self, link, ico, css_filename, version, log, *args):

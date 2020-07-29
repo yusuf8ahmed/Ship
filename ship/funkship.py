@@ -111,18 +111,11 @@ def check_filename(name, log):
     Returns:
         filename_inner (str): filename
     """
-    log("checking arg.file".format())
-    if os.path.exists(name):
-        try:   
-            filename_inner, frameinfo = name, getframeinfo(currentframe())
-            if type(filename_inner) != str:
-                raise ShipError("filename argument can only be of type string not {}".format(type(filename_inner)), frameinfo.lineno)
-            else:
-                return filename_inner
-        except BaseException as e:
-            _, _, exc_tb = sys.exc_info()
-            raise ShipError("function :{}".format(__name__,e), exc_tb.tb_lineno)
+    log(f"checking arg.file {name}, {type(name)}")
+    if name.exists():
+        return name
     else:
+        log("file {} doesn't exist".format(name))
         raise ShipError("file {} doesn't exist".format(name), "")
     
 def mimetype_and_type(filename, log):

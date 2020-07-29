@@ -23,7 +23,7 @@ if sys.version_info >= (3, 0):
     import argparse  # cli
     import webbrowser # open webbrowser
     # replacement for os.path see issues #3 and #5
-    from pathlib import Path
+    from pathlib import Path, PurePath
     
     #local imports
     if str(__package__) == "ship":
@@ -64,12 +64,12 @@ parser.add_argument('-l','--link', action='store_true', help='if flagged ship wi
 parser.add_argument('-V', '--verbose', action='store_true', help='if flagged additional details will be shown via stdout')
 parser.add_argument('-v', '--version', action='version', version="Ship {}".format(__version__))
 args = parser.parse_args()
-              
+
 #? CONST
 # Files 
-ICO_FILENAME = os.path.join(os.path.dirname(__file__), "favicon.ico") 
-JS_FILENAME = os.path.join(os.path.dirname(__file__), "demo_defer.js")
-CSS_FILENAME = os.path.join(os.path.dirname(__file__), "main.css")
+ICO_FILENAME = PurePath(PurePath(__file__).parent).joinpath("favicon.ico")
+JS_FILENAME = PurePath(PurePath(__file__).parent).joinpath("demo_defer.js") 
+CSS_FILENAME = PurePath(PurePath(__file__).parent).joinpath("main.css")
 # Command representation
 COMMAND = " ".join(sys.argv)
 # Verbose option
@@ -98,12 +98,14 @@ elif args.private == True:
     PRIVATE = True
     HOST = local_address() # private ip
 # File operations
-MAIN = args.main
-logger.debug(f"main: {MAIN}")
+MAIN = Path(args.main)
+if os.name == "nt":
+    logger.debug(f"Windows Change")
+    MAIN = Path(r"{}".format(args.main))
+logger.debug("main: {}".format(repr(MAIN)))
 if MAIN is None:
-    logger.debug(f"main cannot be NoneType :{MAIN}")
+    logger.debug("main cannot be NoneType :{}".format(MAIN))
     ShipExit("main argument cannot be empty")
-    
 # Favicon operations
 ICO = read_file_ico(ICO_FILENAME)
 if LINK_OPTION:
@@ -112,11 +114,23 @@ if LINK_OPTION:
 else:
     logger.debug("Ship sharing file")
     FILENAME = check_filename(MAIN, logger.debug)
-    ABS_FILEPATH = os.path.abspath(FILENAME)
+    RESURL = FILENAME
+    ABS_FILEPATH = Path(FILENAME).resolve()
     logger.debug("FILEPATH:{}".format(ABS_FILEPATH))
-    MIMETYPE, TYPE = mimetype_and_type(FILENAME, logger.debug)
-    FILE = read_file(FILENAME, logger.debug)
-   
+    MIMETYPE, TYPE = mimetype_and_type(ABS_FILEPATH, logger.debug)
+    FILE = read_file(ABS_FILEPATH, logger.debug)
+
+def winfileurl(filename):
+    FILENAME_IN_URL = str(filename).replace('\\', '/')
+    drive, path = os.path.splitdrive(FILENAME_IN_URL)
+    return path
+
+if os.name == "nt" and os.path.isabs(MAIN) is True:
+    RESURL = winfileurl(FILENAME)
+    FILENAME = RESURL
+else:
+    RESURL = "/{}".format(FILENAME)
+
 def HTTP_handler(*args):
     """Description: create HTTP handler with *args given by http.server.HTTPServer
     :RELIANT ON GLOBAL SCOPE
@@ -140,10 +154,12 @@ def HTTP_handler(*args):
             #URL Server route method is based switch case method
             HTTP_URL_Server(LINK, ICO, CSS_FILENAME, __version__, logger.debug, *args)
         else:
-            #File Server route method is based switch case method
-            HTTP_File_Server(FILENAME, FILE, ICO, JS_FILENAME, HOST, PORT, MIMETYPE, CSS_FILENAME, __version__, *args)
+            #File Server route method is used if statement method
+            # logger.debug(FILENAME)
+            logger.debug("resource url {}, resource path {}".format(RESURL, FILENAME))
+            HTTP_File_Server(FILENAME, RESURL, FILE, ICO, JS_FILENAME, HOST, PORT, MIMETYPE, CSS_FILENAME, __version__, logger.debug, *args)
     except BaseException as e:
-        logger.debug("error when creating server", level="error")
+        logger.debug("HTTP_handler: {}".format(e), level="error")
         _, _, exc_tb = sys.exc_info()
         raise ShipError("{}".format(e), "{} : function HTTP_handler".format(exc_tb.tb_lineno))
   
@@ -170,6 +186,7 @@ def main():
     myServer, port_assigned = create_server(host, port, HTTP_handler)
     logger.debug("Created HTTP server") 
     url = hosting(host, port_assigned)
+    print("Sharing File {}".format(ABS_FILEPATH))
     print("Make sure to click 'ctrl-c' to kill after usage")
     print("{} Sharing Server Starts - {}".format(time.asctime(), url))
     logger.debug("displaying qrcode")
@@ -181,7 +198,7 @@ def main():
     logger.debug("Server loop running in thread: {}".format(server_thread.name))
     
     if WB_OPTION:
-        webbrowser.open(url=url)
+        webbrowser.open(url=url, new=2)
     
     def handler(x, y):
         logger.debug("stopping HTTP server")
