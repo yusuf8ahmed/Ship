@@ -43,6 +43,7 @@ class HTTP_File_Server(BaseHTTPRequestHandler):
             res = ""
             self._set_response(404, "text/html", len(res.encode('utf-8')))
             self.wfile.write(res.encode())
+   
 
 def random_port():
     """function return a random empty port

@@ -155,7 +155,6 @@ def HTTP_handler(*args):
             HTTP_URL_Server(LINK, ICO, CSS_FILENAME, __version__, logger.debug, *args)
         else:
             #File Server route method is used if statement method
-            # logger.debug(FILENAME)
             logger.debug("resource url {}, resource path {}".format(RESURL, FILENAME))
             HTTP_File_Server(FILENAME, RESURL, FILE, ICO, JS_FILENAME, HOST, PORT, MIMETYPE, CSS_FILENAME, __version__, logger.debug, *args)
     except BaseException as e:
