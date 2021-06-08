@@ -1,6 +1,6 @@
 future==0.18.2
 loguru==0.5.1
-Pillow==7.2.0
+Pillow==8.2.0
 pyngrok==4.1.7
 PyYAML==5.3.1
 qrcode==6.1
